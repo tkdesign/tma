@@ -1,0 +1,45 @@
+.card {
+    padding: .75rem;
+    margin-bottom: 2rem;
+    border: 0;
+    min-width: 280px;
+    flex-basis: 32.6%;
+    flex-grow: 1;
+}
+@media screen and (max-width: 750px) {
+    .card {
+        margin-top: 0px;
+        margin-right: auto;
+        margin-bottom: 2rem;
+        margin-left: auto;
+        flex-basis: 100%;
+    }
+}
+
+.card-image-top {
+    height: 280px;
+}
+
+.card-image-top img {
+    object-fit: cover;
+}
+
+.card-title {
+    margin-top: .25rem;
+    margin-bottom: .25rem;
+    min-height: 1.5rem;
+}
+
+.card-text {
+    font-size: .85rem;
+    min-height: .85rem;
+}
+.modal-body .container-fluid {
+    display: flex;
+    justify-content: center;
+}
+.modal-body img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+}

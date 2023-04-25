@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="sk">
+
+<head>
+    <!-- Používanie meta značiek -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Adresa, kontaktné údaje a formulár spätnej väzby">
+    <!-- //Používanie meta značiek -->
+    <link rel="shortcut icon" href="data:,"><!-- Špeciálna metóda, aby prehliadač nežiadal ikonu zo 'servera', ak ju webová stránka nemá -->
+    <!-- Štýly aj Javascript sú v samostatných súboroch -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous"><!-- Štýly Bootstrap 5 -->
+    <link href="css/main.css" rel="stylesheet"><!-- Spoločné štýly pre všetky stránky -->
+    <!-- //Štýly aj Javascript sú v samostatných súboroch -->
+    <title>TM Architektúra. Potvrdenie o prijatí</title>
+</head>
+
+<body>
+    <!-- Pre túto stránku bolo použité obyčajné adaptívne rozloženie -->
+
+    <!-- Horný navigačný panel s horným menu s 4 stránkami a logom -->
+    <header class="navbar navbar-expand-lg bg-light sticky-top"><!-- sticky-top = Navigácia viditeľná počas scrollovania -->
+        <nav class="container flex-wrap py-3 px-5">
+            <a class="navbar-brand mb-0" href="index.html">TM Architektura</a><!-- Textový logotyp -->
+            <!-- Tlačidlo ako Hamburger, ktoré zobrazuje horné menu na mobilných zariadeniach -->
+            <button class="navbar-toggler btn-lg" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarCollapseContainer" aria-controls="navbarCollapseContainer" aria-expanded="false"
+                aria-label="Toggle menu">
+                <span class="navbar-toggler-icon"></span><!-- Obrázok ako hamburger -->
+            </button>
+            <!-- //Tlačidlo ako Hamburger, ktoré zobrazuje horné menu na mobilných zariadeniach -->
+            <!-- Horné menu -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarCollapseContainer">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Domov</a></li>
+                    <li class="nav-item"><a class="nav-link" href="projects.html">Projekty</a></li>
+                    <li class="nav-item"><a class="nav-link" href="prices.html">Cenník</a></li>
+                    <li class="nav-item" aria-current="page"><a class="nav-link active" href="contacts.html">Kontakt</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- //Horné menu -->
+        </nav>
+    </header>
+    <!-- //Horný navigačný panel s horným menu s 4 stránkami a logom -->
+
+    <main class="container">
+        <!-- Blok s informáciami o úspešnom odoslaní žiadosti (formulára) a tlačidlom na prechod na inú stránku (fotogaléria)  -->
+        <section class="p-5">
+            <h1>Potvrdenie o prijatí</h1>
+            <p>Ďakujeme, že ste nás kontaktovali!</p>
+            <p>Určite si vašu správu prečítame a čo najskôr vám odpovieme.</p>
+            <p>Zatiaľ si pozrite príklady našej práce.</p>
+            <a class="btn btn-outline-secondary mt-4" href="projects.html">Do galérie projektov</a><!-- Link ako tlačidlo s preklikom na inú stránku (galéria projektov) -->
+        </section>
+        <!-- //Blok s informáciami o úspešnom odoslaní žiadosti (formulára) a tlačidlom na prechod na inú stránku (fotogaléria)  -->
+    </main>
+
+    <!-- Dolný navigačný panel zobrazený v dvoch stĺpcoch s dolným menu s 4 stránkami a 'autorskými právami' -->
+    <footer class="navbar navbar-expand-lg bg-light">
+        <div class="container flex-wrap py-3 px-5 justify-content-md-start">
+            <p class="pe-4 mb-0 text-muted"><strong>TM Architektura,</strong> 2022</p><!-- Autorské práva -->
+            <!-- Dolné menu -->
+            <ul class="navbar-nav flex-column justify-content-end border-start ps-3">
+                <li class="nav-item"><a class="nav-link" href="index.html">Domov</a></li>
+                <li class="nav-item"><a class="nav-link" href="projects.html">Projekty</a></li>
+                <li class="nav-item"><a class="nav-link" href="prices.html">Cenník</a></li>
+                <li class="nav-item" aria-current="page"><a class="nav-link active" href="contacts.html">Kontakt</a>
+                </li>
+            </ul>
+            <!-- //Dolné menu -->
+        </div>
+    </footer>
+    <!-- //Dolný navigačný panel zobrazený v dvoch stĺpcoch s dolným menu s 4 stránkami a 'autorskými právami' -->
+
+    <!-- Aby sa zabezpečilo, že používateľ uvidí obsah čo najskôr, pripojenie skriptov sa odkladá na poslednú chvíľu. Princípy
+    moderných webových prehliadačov -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script><!-- Bootstrap 5 js library -->
+    
+</body>
+
+</html>
