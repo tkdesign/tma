@@ -3,11 +3,11 @@ TM Architektura
 
 ##About
 
-TM Architektura is a website of the architectural bureau. Based on final work by Scripting Languages course in UKF.
+TM Architektura is a website of the architectural bureau.
 
 ##Author
 
-Petr Kovalenko (1AI22b)
+Petr Kovalenko
 
 ##Requirements
 
