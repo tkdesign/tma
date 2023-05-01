@@ -85,6 +85,9 @@ class Base
             $this->render($controllername, $func);
         } else {
             http_response_code(404);
+            $error_code = "404";
+            $error_title = "Not Found";
+            $error_desc = "The requested URL was not found on this server.";
             include_once('ui/404.php');
             die();
         }
