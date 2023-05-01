@@ -12,7 +12,7 @@ Petr Kovalenko
 
 ## Getting started
 
-##№ Database
+## Database
 
 For the site to work, you must first import the `tma` database to a DBMS server that is compatible with MySql 8. For example, it can be Percona or MariaDB of appropriate versions.
 
