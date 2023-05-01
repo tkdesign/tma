@@ -6,9 +6,11 @@
 
 TM Architektura is a website of the architectural bureau
 
-## Author
+## Copyrights
 
-Petr Kovalenko
+The author of the program code of this site is Peter Kovalenko.
+
+Photos of completed projects and renderings of architectural concepts are provided for this site by architect Maria Tolypina, who holds the exclusive copyright to them. Use of these materials outside of this site is possible only with her permission.
 
 ## Getting started
 
@@ -16,7 +18,7 @@ Petr Kovalenko
 
 For the site to work, you must first import the `tma` database to a DBMS server that is compatible with MySql 8. For example, it can be Percona or MariaDB of appropriate versions.
 
-The initial data of the database model and sql-script to import the structure and data into the DBMS are in the `data` folder.
+The initial data of the database model `tma.mwb` and sql-script `tma.sql` to import the structure and data into the DBMS are in the `data` folder.
 
 ### Backend and frontend
 
