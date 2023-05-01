@@ -1,10 +1,10 @@
 <?php
 switch ($inc) {
-    case "main":
+    case "home":
         include_once("$inc.php");
         break;
     default:
         include_once("header.php");
         include_once("$inc.php");
-        includ_once("footer.php");
+        include_once("footer.php");
 }

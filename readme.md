@@ -1,15 +1,16 @@
-TM Architektura
-===
+# TM Architektura
 
-##About
+---
+
+## About
 
 TM Architektura is a website of the architectural bureau.
 
-##Author
+## Author
 
 Petr Kovalenko
 
-##Requirements
+## Requirements
 
 - PHP 7.4
 - MySql 8

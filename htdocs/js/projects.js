@@ -19,7 +19,7 @@ async function loadMore() {
     if(container!==undefined || container!=null) {
         const currentNextPage = container.querySelector("#nextPage"); // Dostať tlačidlo stránkovania na konci stránky
         try {
-            let response = await fetch('page' + nextItem + '.html'); // Dostať 'promise' s obsahom novej stránky zo 'servera'; globálna premenná nextItem obsahuje číslo novej stránky, ktorá sa má získať zo 'servera'
+            let response = await fetch('/projects.html?page=' + nextItem); // Dostať 'promise' s obsahom novej stránky zo 'servera'; globálna premenná nextItem obsahuje číslo novej stránky, ktorá sa má získať zo 'servera'
             if (currentNextPage !== undefined && currentNextPage != null) {
                 currentNextPage.remove(); // Odstránenie tlačidla stránkovania na konci aktuálnej stránky, pretože nová stránka už bola prijatá zo 'servera'
             }

@@ -3,28 +3,35 @@
 namespace App;
 
 /**
- * Класс Base, реализующий механизмы автозагрузки классов, маршрутизации, вызова контроллеров и рендеринга шаблонов
+ * Class Base
+ * Trieda Base je dispatcher/router/render. Určuje, ktorý kontrolér a akciu treba volať na základe URL adresy požiadavky
+ * Trieda Base predstavuje triedu, ktorá implementuje Singleton návrhový vzor.
+ * @package App
  */
 class Base
 {
     private static $_instance = null;
     private $ROUTES;
+    private $config;
 
     /**
-     * Конструктор класса Base с защитой от дублирования.
-     * Настройка вывода сообщений об ошибках, выбор кодировки, установка значений свойств, настройка автозагрузки классов
+     * Base constructor.
+     * Konštruktor triedy Base so zabezpečením proti duplikácii.
      */
     private function __construct()
     {
-        ini_set('default_charset', $charset = 'UTF-8');
+        ini_set('default_charset', $charset = 'UTF-8'); // установка в качестве кодировки по умолчанию кодировки юникод для обработки данных при передаче между клиентом и сервером
         if (extension_loaded('mbstring')) {
-            mb_internal_encoding($charset);
+            mb_internal_encoding($charset); // установка кодировки юникод для функций из расширения php mbstring
         }
+        /*Настрйка вывода сообщений об ошибках*/
         ini_set('display_errors', 1);
         error_reporting((E_ALL | E_STRICT) & ~(E_NOTICE | E_USER_NOTICE));
+        /*//Настрйка вывода сообщений об ошибках*/
         if (!isset($_SERVER['SERVER_NAME']) || $_SERVER['SERVER_NAME'] === '') {
             $_SERVER['SERVER_NAME'] = gethostname();
         }
+        /*Регистрация анонимной функции для автозагрузки классов*/
         spl_autoload_register(function ($class) {
             $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
             if (file_exists($file)) {
@@ -37,8 +44,10 @@ class Base
     }
 
     /**
-     * Точка входа в класс Base для получения единственного экземпляра класса
-     * @return Base|null Статический экземпляр класса Base
+     * Singleton
+     * V prípade, že existuje už jediný exemplár triedy Base, táto metóda vráti referenciu na tento exemplár. Ak
+     * neexistuje, vytvorí sa nový a táto metóda vráti referenciu na novovytvorený objekt.
+     * @return Base|null Jediný exemplár triedy Base (Singleton)
      */
     public static function getInstance()
     {
@@ -49,24 +58,26 @@ class Base
     }
 
     /**
-     * Метод добавления нового маршрута в массив маршрутизации
-     * @param string $path Шаблон запроса
-     * @param string $func Связанный контроллер и метод
+     * Metóda na pridanie cesty do routovacieho poľa
+     * @param string $path Šablóna cesty
+     * @param string $func Prepojený kontrolér a metóda
      */
-    function addRoute($path, $func)
+    public function addRoute($path, $func)
     {
         $this->ROUTES[] = array($path, $func);
     }
 
     /**
-     * Основной метод класса, выполняющий маршрутизацию запросов, вызов соответствующих контроллеров и рендеринг шаблонов
+     * Metóda centrálneho kontroléra (front controller), ktorá je zodpovedná za spracovanie požiadaviek na základe
+     * pravidla smerovania.
      */
-    function run()
+    public function run($config)
     {
+        $this->config = $config;
         $urlArr = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        if ($urlArr[mb_strlen($urlArr) - 1] != '/') {
+        /*if ($urlArr[mb_strlen($urlArr) - 1] != '/') {
             $urlArr .= '/';
-        }
+        }*/
         $key = array_search($_SERVER['REQUEST_METHOD'] . ' ' . $urlArr, array_column($this->ROUTES, 0));
         list($class, $func) = explode('->', $this->ROUTES[$key][1]);
         if ($key !== false) {
@@ -80,35 +91,35 @@ class Base
     }
 
     /**
-     * Метод для рендеренига шаблонов
-     * @param string $controllername Название класса контроллера
-     * @param string $func Название метода контроллера
+     * Spôsob prípravy reprezentácie dátového modelu pomocou kontroléra
+     * @param string $controllername Názov triedy kontroléra
+     * @param string $func Názov metódy kontroléra
      */
     private function render($controllername, $func)
     {
         $controller = new $controllername($_REQUEST);
         ob_start();
-        $controller->run($func, $_REQUEST);
+        $controller->run($func);
         $body = ob_get_clean();
         echo $body;
     }
 
     /**
-     * Метод перенаправления на другую страницу
-     * @param string $url Новый URL-адрес для перенаправления
+     * Metóda presmerovania požiadavky na inú stránku
+     * @param string $url Nová adresa URL pre presmerovanie
      */
-    function reroute($url)
+    public function reroute($url)
     {
         header('Location: ' . $url);
         exit();
     }
 
     /**
-     * Метод отправки ответа сервера в формате application/json
-     * @param int $success Код ответа сервера
-     * @param string $data Сериализованные в строку данные в формате JSON
+     * Metóda odoslania odpovede servera vo formáte application/json
+     * @param int $success Kód odpovede servera
+     * @param string $data Serializované údaje vo formáte JSON
      */
-    function returnJsonHttpResponse($success, $data)
+    public function returnJsonHttpResponse($success, $data)
     {
         ob_clean();
         header_remove();
@@ -120,6 +131,14 @@ class Base
         }
         echo $data;
         exit();
+    }
+
+    /**
+     * Getter konfiguračného dátového poľa
+     * @return array
+     */
+    public function getConfig() {
+        return $this->config;
     }
 
 }

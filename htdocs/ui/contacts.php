@@ -18,16 +18,16 @@
     <section class="p-5">
         <h1>Kontaktný formulár</h1>
         <!-- Formulár, ktorý po validácii odosiela údaje na stránku s názvom "confirmation.html" (stránka s poďakovaním) na "serveri" -->
-        <form action="confirmation.html" class="col-md-6 needs-validation">
+        <form method="post" action="confirmation.html" class="col-md-6 needs-validation">
             <!-- Polia: Meno, Email, Textarea -->
             <label for="name" class="form-label">Meno</label>
-            <input type="text" id="name" placeholder="Zadajte meno" class="form-control">
+            <input type="text" id="name" placeholder="Zadajte meno" class="form-control" name="name" required="">
             <br>
             <label for="mail" class="form-label">E-mail</label>
-            <input type="email" id="mail" placeholder="Zadajte e-mail" class="form-control" required="">
+            <input type="email" id="mail" placeholder="Zadajte e-mail" class="form-control" name="email" required="">
             <br>
             <label for="question" class="form-label">Vaša správa</label>
-            <textarea id="question" placeholder="Zadajte vašu správu" class="form-control" required=""></textarea>
+            <textarea id="question" placeholder="Zadajte vašu správu" class="form-control" name="request" required=""></textarea>
             <!-- //Polia: Meno, Email, Textarea -->
             <!-- Checkbox GDPR "Súhlasím so spracovaním osobných údajov" -->
             <input type="checkbox" id="check" class="form-check-input me-2" required=""><label for="check"

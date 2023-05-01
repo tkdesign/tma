@@ -3,7 +3,9 @@
 namespace App;
 
 /**
- * Базовый класс модели
+ * Class Model
+ * Abstraktná trieda modelu
+ * @package App
  */
 abstract class Model
 {
@@ -11,7 +13,8 @@ abstract class Model
     protected $config;
 
     /**
-     * Конструктор класса Model\
+     * Konštruktor triedy Model
+     * Metóda, ktorá sa volá pri vytváraní inštancie triedy a slúži na inicializáciu jej vlastností.
      * @param $data
      */
     public function __construct($config)
@@ -19,6 +22,10 @@ abstract class Model
         $this->config = $config;
     }
 
+    /**
+     * Definovanie metódy triedy modelu na pripojenie k databáze.
+     * @return bool Stav pripojenia
+     */
     abstract public function connect();
 
 }
