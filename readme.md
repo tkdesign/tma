@@ -45,3 +45,4 @@ Here you must also specify the database user password (if it is used on the serv
 - PHP 7.4
 - MySql 8
 - Apache 2.4
+- All modern desktop and mobile browsers
