@@ -8,7 +8,7 @@ TM Architektura is a website of the architectural bureau
 
 ## Copyrights
 
-The author of the program code of this site is Peter Kovalenko.
+The author of the program code of this site is Petr Kovalenko.
 
 Photos of completed projects and renderings of architectural concepts are provided for this site by architect Maria Tolypina, who holds the exclusive copyright to them. Use of these materials outside of this site is possible only with her permission.
 
