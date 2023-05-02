@@ -10,8 +10,8 @@
     <!-- //Používanie meta značiek -->
     <link rel="shortcut icon" href="data:,"><!-- Špeciálna metóda, aby prehliadač nežiadal ikonu zo 'servera', ak ju webová stránka nemá -->
     <!-- Štýly aj Javascript sú v samostatných súboroch -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous"><!-- Štýly Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous"><!-- Štýly Bootstrap 5 -->
     <link href="css/main.css" rel="stylesheet"><!-- Spoločné štýly pre všetky stránky -->
     <link href="css/<?=$inc?>.css" rel="stylesheet"><!-- Individuálne štýly aktuálnej stránky -->
     <!-- //Štýly aj Javascript sú v samostatných súboroch -->
