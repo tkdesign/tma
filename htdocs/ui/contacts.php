@@ -19,6 +19,9 @@
         <h1>Kontaktný formulár</h1>
         <!-- Formulár, ktorý po validácii odosiela údaje na stránku s názvom "confirmation.html" (stránka s poďakovaním) na "serveri" -->
         <form method="post" action="confirmation.html" class="col-md-6 needs-validation">
+            <!-- CSRF token -->
+            <input type="hidden" name="token" value="<?=$token?>">
+            <!-- //CSRF token -->
             <!-- Polia: Meno, Email, Textarea -->
             <label for="name" class="form-label">Meno</label>
             <input type="text" id="name" placeholder="Zadajte meno" class="form-control" name="name" required="">

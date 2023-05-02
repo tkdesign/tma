@@ -72,6 +72,14 @@ class MainController extends Controller
         $inc = 'prices';
         $page_title = 'TM Architektúra. Cenník';
         $page_desc = 'Aktuálny cenník architektonických návrhov';
+        $price_groups =
+        $config = $app->getConfig();
+        $model = new PricesModel($config);
+        $price_groups = $model->get_price_groups();
+        $prices = array();
+        foreach ($price_groups as $group) {
+            $prices[$group["id"]] = $model->get_prices_by_group_id($group["id"]);
+        }
         include_once 'ui/layout.php';
     }
 
@@ -84,6 +92,19 @@ class MainController extends Controller
         $inc = 'contacts';
         $page_title = 'TM Architektúra. Kontakt';
         $page_desc = 'Adresa, kontaktné údaje a formulár spätnej väzby';
+        /*session_start();
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        $token = $_SESSION['csrf_token']; // передаете на форму.
+        session_start();*/
+        $config = $app->getConfig();
+        /* Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
+        $token = hash_hmac('sha256', microtime(true) . mt_rand(), $config["secret_key"]);
+        session_start();
+        $_SESSION['csrf_token'] = $token;
+        $_SESSION['csrf_token_time'] = time();
+        /* //Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
         include_once 'ui/layout.php';
     }
 
@@ -99,6 +120,24 @@ class MainController extends Controller
         }
         $err_msg = array();
         if (property_exists($fields, "name") && property_exists($fields, "email") && property_exists($fields, "request")) {
+            /*Kontrola tokenu anti-CSRF*/
+            if (empty($fields->token)) {
+                $err_msg[] = "Chyba tokenu anti-CSRF";
+            } else {
+                session_start();
+                if(hash_equals($_SESSION['csrf_token'], $fields->token)) {
+                    // Kontrola platnosti tokenu
+                    $token_life = 3600; // Maximálna platnosť tokenu v sekundách
+                    $current_time = time();
+                    $token_time = $_SESSION['csrf_token_time'];
+                    if (($current_time - $token_time) > $token_life) {
+                        $err_msg[] = "Chyba tokenu anti-CSRF";
+                    }
+                } else {
+                    $err_msg[] = "Chyba tokenu anti-CSRF";
+                }
+            }
+            /*//Kontrola tokenu anti-CSRF*/
             if (empty($fields->name)) {
                 $err_msg[] = "Musí byť zadané meno!";
             }
