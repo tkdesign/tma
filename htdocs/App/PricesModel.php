@@ -3,10 +3,19 @@
 
 namespace App;
 
-
+/**
+ * Class PricesModel
+ * Trieda na prácu s tabuľkami prices_$lang a prices_groups_$lang
+ * @package App
+ */
 class PricesModel extends Model
 {
 
+    /**
+     * Metóda na načítanie zoznamu tarifných skupín z databázy
+     * @param string $lang Prípona tabuľky
+     * @return array|null Vracia zoznam skupin
+     */
     public function get_price_groups($lang = "sk")
     {
         $result = null;
@@ -17,6 +26,12 @@ class PricesModel extends Model
         return $result;
     }
 
+    /**
+     * Metóda na načítanie cenníkov z databázy podľa identifikátora tarifnej skupiny
+     * @param int $group_id Identifikátor tarifnej skupiny
+     * @param string $lang Prípona tabuľky
+     * @return array|null Vracia zoznam cenníkov
+     */
     public function get_prices_by_group_id($group_id, $lang = "sk")
     {
         $result = null;

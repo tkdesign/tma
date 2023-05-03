@@ -70,7 +70,7 @@ function clickHandler2(evt) {
 }
 
 /* Vykonať JavaScript ihneď po načítaní stránky */
-window.addEventListener('load', function (event) {
+document.addEventListener('DOMContentLoaded', function () {
 
     /* Inicializačný kód stránkovania */
     nextItem = 2;

@@ -3,10 +3,19 @@
 
 namespace App;
 
-
+/**
+ * Class UsersModel
+ * Trieda na prácu s tabuľkou `users`
+ * @package App
+ */
 class UsersModel extends Model
 {
 
+    /**
+     * Metóda na získanie informácií o používateľovi z databázy podľa jeho používateľského mena
+     * @param string $username Meno používateľa v databáze
+     * @return array|null Vracia informácie o používateľovi z databázy
+     */
     public function get_user_by_username($username)
     {
         $result = null;

@@ -12,6 +12,9 @@ $app->addRoute('POST /confirmation.html', 'MainController->confirmation');
 $app->addRoute('GET /login.html', 'MainController->login');
 $app->addRoute('GET /logout.html', 'MainController->logout');
 $app->addRoute('POST /auth.html', 'MainController->auth');
+$app->addRoute('GET /dashboard.html', 'MainController->dashboard');
+$app->addRoute('GET /dashboard/delete_request.html', 'MainController->delete_request');
+$app->addRoute('GET /dashboard/reply_request.html', 'MainController->reply_request');
 /*//Pravidlá routovania*/
 
 $app->run($config); // volanie metódy centrálneho kontroléra

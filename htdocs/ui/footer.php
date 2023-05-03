@@ -17,9 +17,51 @@
 
 <!-- Aby sa zabezpečilo, že používateľ uvidí obsah čo najskôr, pripojenie skriptov sa odkladá na poslednú chvíľu. Princípy
 moderných webových prehliadačov -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script><!-- Bootstrap 5 js library -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script><!-- Bootstrap 5 js library -->
 <?php if (in_array($inc,array("projects", "contacts"))):?>
     <script src="js/<?=$inc?>.js"></script>
+<?php endif; ?>
+<?php if ($this->is_admin && $inc === "dashboard"): ?>
+<script>
+    const on = (listener, query, fn) => {
+        document.querySelectorAll(query).forEach((item) => {
+            item.addEventListener(listener, (el) => {
+                fn(el);
+            });
+        });
+    };
+    document.addEventListener('DOMContentLoaded', function () {
+        on("click", "button[data-action='reply']", (item) => {
+            let id = item.target.dataset.id;
+            if (id != null) {
+                let ret = confirm("Označiť požiadavku s ID " + id + " ako zodpovedané?");
+                if (ret) {
+                    let url_request = location.href.split('?');
+                    if (url_request.length == 2) {
+                        location.href = "/dashboard/reply_request.html?id=" + id +"&" + url_request[1];
+                    } else {
+                        location.href = "/dashboard/reply_request.html?id=" + id;
+                    }
+                }
+            }
+        });
+        on("click", "button[data-action='delete']", (item) => {
+            let id = item.target.dataset.id;
+            if (id != null) {
+                let ret = confirm("Odstrániť požiadavku s identifikátorom " + id + "?");
+                if (ret) {
+                    let url_request = location.href.split('?');
+                    if (url_request.length == 2) {
+                        location.href = "/dashboard/delete_request.html?id=" + id +"&" + url_request[1];
+                    } else {
+                        location.href = "/dashboard/delete_request.html?id=" + id;
+                    }
+                }
+            }
+        });
+
+    });
+</script>
 <?php endif; ?>
 
 </body>

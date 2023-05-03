@@ -2,7 +2,7 @@
     <!-- Blok s informáciami o úspešnom odoslaní žiadosti (formulára) a tlačidlom na prechod na inú stránku (fotogaléria)  -->
     <section class="p-5">
         <?php if (count($err_msg)>0): ?>
-        <h1>Произошла ошибка при заполнении формы</h1>
+        <h1>Pri spracovaní formulára na serveri došlo k chybe</h1>
         <?php foreach($err_msg as $err): ?>
         <p><?=$err?></p>
         <?php endforeach; ?>

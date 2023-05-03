@@ -15,7 +15,7 @@ class MainModel extends Model
      * @param int $offset Odsadenie od začiatku
      * @param int $limit Limit položiek v dotaze
      * @param string $lang Prípona tabuľky
-     * @return |null Zoznam projektov
+     * @return |null Vracia zoznam projektov
      */
     public function get_projects($offset = -1, $limit = -1, $lang = "sk")
     {
@@ -36,9 +36,9 @@ class MainModel extends Model
     }
 
     /**
-     * Metóda na získanie počtu riadkov v tabuľke
+     * Metóda na získanie počtu riadkov v tabuľke projects_$lang
      * @param string $lang Prípona tabuľky
-     * @return |null Počet riadkov v tabuľke
+     * @return |null Vracia počet riadkov v tabuľke
      */
     public function get_count_rows_in_projects($lang = "sk")
     {
@@ -51,9 +51,9 @@ class MainModel extends Model
     }
 
     /**
-     * Spôsob pridávania nových kontaktných informácií návštevníkov webovej lokality do databázy
+     * Metóda pridávania nových kontaktných informácií návštevníkov webovej stránky do databázy
      * @param $fields Polia formulára
-     * @return bool Vracia stav nového riadku vloženého do databázy
+     * @return bool Vracia stav vloženia reťazca do databázy
      */
     public function toCRM($fields)
     {
@@ -63,6 +63,83 @@ class MainModel extends Model
             ':request' => $fields->request
         );
         $stmt = $this->db->prepare('INSERT INTO crm SET name=:name, email=:email, request=:request, created_at=NOW()');
+        $result = $stmt->execute($data);
+        /*if (!$result) {
+            $error = $stmt->errorInfo();
+            echo "Chyba: " . $error[2];
+        }*/
+        return $result;
+    }
+
+    /**
+     * Metóda načítania zoznamu požiadaviek z databázy
+     * @param int $offset Odsadenie od začiatku
+     * @param int $limit Limit položiek v dotaze
+     * @param string $lang Prípona tabuľky
+     * @return array|null Vracia zoznam požiadaviek
+     */
+    public function get_crm($offset = -1, $limit = -1)
+    {
+        $lim = "";
+        $offset = intval($offset);
+        $limit = intval($limit);
+        if ($offset > -1 && $limit > 0) {
+            $lim = "$offset,$limit";
+        } else if ($offset === -1 && $limit > 0) {
+            $lim = "$limit";
+        }
+        $result = null;
+        try {
+            $result = $this->db->query("SELECT * FROM crm ORDER BY id" . (!empty($lim) ? " LIMIT $lim" : "") . ";")->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $err) {
+        }
+        return $result;
+    }
+
+    /**
+     * Metóda na získanie počtu riadkov v tabuľke crm
+     * @return array|null Vracia počet riadkov v tabuľke
+     */
+    public function get_count_rows_in_crm()
+    {
+        $total = null;
+        try {
+            $total = $this->db->query("SELECT COUNT(*) AS count_rows FROM crm;")->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $err) {
+        }
+        return $total;
+    }
+
+    /**
+     * Metóda na vymazanie riadku v databáze
+     * @param int $id Identifikátor riadku v databáze
+     * @return bool Vracia stav vymazania riadku v databáze
+     */
+    public function delete_from_crm($id)
+    {
+        $data = array(
+            ':id' => $id
+        );
+        $stmt = $this->db->prepare('DELETE FROM crm WHERE id=:id');
+        $result = $stmt->execute($data);
+        /*if (!$result) {
+            $error = $stmt->errorInfo();
+            echo "Chyba: " . $error[2];
+        }*/
+        return $result;
+    }
+
+    /**
+     * Metóda na vloženie dátumu odpovede do riadku v databáze
+     * @param int $id Identifikátor riadku v databáze
+     * @return bool Vracia stav aktualizácie riadku v databáze
+     */
+    public function reply_crm_request($id)
+    {
+        $data = array(
+            ':id' => $id
+        );
+        $stmt = $this->db->prepare('UPDATE crm SET replied_at=NOW() WHERE id=:id');
         $result = $stmt->execute($data);
         /*if (!$result) {
             $error = $stmt->errorInfo();

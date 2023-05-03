@@ -15,8 +15,9 @@ class MainController extends Controller
     /**
      * MainController konstructor.
      */
-    public function __construct()
+    public function __construct($args)
     {
+        parent::__construct($args);
         $this->is_admin = false;
         if (isset($_COOKIE[session_name()])) {
             session_start();
@@ -26,12 +27,15 @@ class MainController extends Controller
                 $model = new UsersModel($config);
                 $admin_profile = $model->get_user_by_username($_SESSION['username']);
                 $crypt = $admin_profile[0]["password"];
-                if ($_SESSION['username'] != $admin_profile[0]["username"] || $_SESSION['crypt'] != $crypt) {
-                    $this->login($app);
+                if ($_SESSION['username'] !== $admin_profile[0]["username"] || $_SESSION['crypt'] !== $crypt) {
+                    session_destroy();
+                    $app->reroute("/login.html");
+                    exit();
                 }
-                $tmp_time = time();
-                if (($_SESSION['lastseen'] + $config['expiry'] * 3600) < $tmp_time) {
-                    $this->logout($app);
+                if (($_SESSION['lastseen'] + $config['expiry'] * 3600) < time()) {
+                    session_destroy();
+                    $app->reroute("/login.html");
+                    exit();
                 }
                 $this->is_admin = true;
             }
@@ -190,6 +194,9 @@ class MainController extends Controller
      */
     public function login($app)
     {
+        if(!isset($_SESSION)) {
+            session_start();
+        }
         $inc = 'login';
         $page_title = 'TM Architektúra. Login';
         $page_desc = 'Vstup do backendu';
@@ -197,7 +204,6 @@ class MainController extends Controller
         /* Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
         $token = hash_hmac('sha256', microtime(true) . mt_rand(), $config["secret_key"]);
         setcookie("sent", true, time() + $config['expiry'] * 3600);
-        session_start();
         $_SESSION['csrf_token_login'] = $token;
         $_SESSION['csrf_token_time_login'] = time();
         /* //Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
@@ -212,10 +218,8 @@ class MainController extends Controller
     {
         if ($this->is_admin) {
             session_start();
-            unset($_SESSION['username']);
-            unset($_SESSION['crypt']);
-            unset($_SESSION['lastseen']);
-            header('Location: /login.html');
+            session_destroy();
+            $app->reroute("/login.html");
             exit();
         }
     }
@@ -238,18 +242,119 @@ class MainController extends Controller
             if ($_POST['username'] != $admin_profile[0]["username"] || !password_verify($_POST['password'], $crypt)) {
                 $err_msg = "Nesprávne ID používateľa alebo heslo";
             } else {
-                setcookie('sent', '', (time() - 365 * 24 * 60 * 60), '/');
                 session_start();
-                unset($_SESSION['csrf_token_login']);
-                unset($_SESSION['csrf_token_time_login']);
+                session_unset();
+                setcookie('sent', '', (time() - 365 * 24 * 60 * 60), '/');
                 $_SESSION['username'] = $admin_profile[0]["username"];
                 $_SESSION['crypt'] = $crypt;
                 $_SESSION['lastseen'] = time();
-                header('Location: /projects.html');
+                header('Location: /dashboard.html');
                 exit();
             }
         }
         $this->login($app);
+    }
+
+    /**
+     * Metóda zobrazenia sekcie správy a monitorovania hlavných parametrov
+     * @param Base $app Inštancia triedy Base
+     */
+    public function dashboard($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $model = new MainModel($config);
+            $is_next_page = false;
+            $total = $model->get_count_rows_in_crm();
+            if ($this->args !== null && property_exists($this->args, "page") && (int)$this->args->page > 1) {
+                $page = intval($this->args->page);
+                if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["crm_records_per_page"] * $page) {
+                    $is_next_page = true;
+                }
+                $requests = $model->get_crm(($page - 1) * $config["crm_records_per_page"], $config["crm_records_per_page"]);
+            } else {
+                $requests = $model->get_crm(0, $config["crm_records_per_page"]);
+                if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["crm_records_per_page"]) {
+                    $is_next_page = true;
+                }
+                $page = 1;
+            }
+            $url_parameters = $this->args;
+            if ($url_parameters !== null && property_exists($url_parameters, "page")) {
+                unset($url_parameters->page);
+            }
+            $count_pages = ceil((int)$total[0]["count_rows"]/(int)$config["crm_records_per_page"]);
+            $inc = 'dashboard';
+            $page_title = 'TM Architektúra. Dashboard';
+            $page_desc = 'Správa a monitorovanie';
+            include_once 'ui/layout.php';
+        } else {
+            http_response_code(403);
+            die('Forbidden');
+        }
+    }
+
+    public function delete_request($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $model = new MainModel($config);
+            if ($this->args !== null && property_exists($this->args, "id") && intval($this->args->id) > 0) {
+                $model->delete_from_crm(intval($this->args->id));
+                $total = $model->get_count_rows_in_crm();
+                $url_parameters = $this->args;
+                $page = 1;
+                if($total > 0) {
+                    $count_pages = ceil((int)$total[0]["count_rows"]/(int)$config["crm_records_per_page"]);
+                    $page = (property_exists($this->args, "page")?$this->args->page:1);
+                }
+                if ($url_parameters !== null) {
+                    if (property_exists($url_parameters, "page")) {
+                        unset($url_parameters->page);
+                    }
+                    if (property_exists($url_parameters, "id")) {
+                        unset($url_parameters->id);
+                    }
+                }
+                $url = "/dashboard.html" . ($page > 1 ? "?page=" . $page . (!empty((array)$url_parameters) ? "&" . $app->parseObject($url_parameters) : "") : (!empty((array)$url_parameters) ? "?" . $app->parseObject($url_parameters) : ""));
+                $app->reroute($url);
+            }
+        } else {
+            http_response_code(403);
+            die('Forbidden');
+        }
+    }
+
+    public function reply_request($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $model = new MainModel($config);
+            if ($this->args !== null && property_exists($this->args, "id") && intval($this->args->id) > 0) {
+                $model->reply_crm_request(intval($this->args->id));
+                $total = $model->get_count_rows_in_crm();
+                $url_parameters = $this->args;
+                $page = 1;
+                if($total > 0) {
+                    $count_pages = ceil((int)$total[0]["count_rows"]/(int)$config["crm_records_per_page"]);
+                    $page = (property_exists($this->args, "page")?$this->args->page:1);
+                }
+                if ($url_parameters !== null) {
+                    if (property_exists($url_parameters, "page")) {
+                        unset($url_parameters->page);
+                    }
+                    if (property_exists($url_parameters, "id")) {
+                        unset($url_parameters->id);
+                    }
+                }
+                $url = "/dashboard.html" . ($page > 1 ? "?page=" . $page . (!empty((array)$url_parameters) ? "&" . $app->parseObject($url_parameters) : "") : (!empty((array)$url_parameters) ? "?" . $app->parseObject($url_parameters) : ""));
+                $app->reroute($url);
+            }
+        } else {
+            http_response_code(403);
+            die('Forbidden');
+        }
+
     }
 
 }

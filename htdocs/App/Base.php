@@ -144,6 +144,23 @@ class Base
         return $this->config;
     }
 
+    /**
+     * Metóda na prevod dvojrozmerného asociatívneho poľa (kľúč:hodnota) na reťazec, ktorý sa pridá do url ako reťazec parametrov.
+     * @param array $obj Asociatívne pole na vstupe
+     * @return string Reťazec, ktorý sa pridá do url ako reťazec parametrov
+     */
+    public function parseObject($obj) {
+        $result='';
+        //if(is_array($obj)) {
+            /*foreach ($obj as $key=>$value) {
+                $result+=($result?$result.'&':'').$key."=".$value;
+            }*/
+            $result = implode("&", array_map( function($key, $value) { return $key . "=" . $value; }, array_keys(get_object_vars($obj)), array_values(get_object_vars($obj)) ));
+       // }
+        return $result;
+    }
+
+
 }
 
 return Base::getInstance();
