@@ -1,31 +1,12 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Хост: localhost
--- Время создания: Май 01 2023 г., 22:21
--- Версия сервера: 8.0.31-23
--- Версия PHP: 7.4.33
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- База данных: `tma`
---
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `crm`
---
 
 CREATE TABLE `crm` (
   `id` int NOT NULL,
@@ -36,20 +17,49 @@ CREATE TABLE `crm` (
   `replied_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- --------------------------------------------------------
+CREATE TABLE `prices_sk` (
+  `id` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `price` varchar(45) DEFAULT NULL,
+  `duration` varchar(45) DEFAULT NULL,
+  `desc` text,
+  `ordering` int DEFAULT NULL,
+  `published` tinyint DEFAULT NULL,
+  `price_group_id` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
---
--- Структура таблицы `projects_has_categories_sk`
---
+INSERT INTO `prices_sk` (`id`, `title`, `price`, `duration`, `desc`, `ordering`, `published`, `price_group_id`) VALUES
+(1, 'Architektonická štúdia', '20€/m²', '8 týždňov', 'Pre začiatok projekčných prác je potrebné priestor zamerať', 0, 1, 1),
+(2, 'Projekty pre územné rozhodnutie a stavebné povolenie', 'od 40€/m²', '8 týždňov', 'Cena platí pre priestory od 100m²', 1, 1, 1),
+(3, 'Realizačný projekt', 'od 70€/m²', '16 týždňov', 'Cena platí pre priestory od 100m²', 2, 1, 1),
+(4, 'Realizačné detaily', 'od 30€/m²', '4 týždne', 'Výkresy nábytku na mieru a podrobná špecifikácia použitých prvkov s cenovou ponukou realizácie na kľúč', 3, 1, 1),
+(5, 'Autorský dozor', '40€/hod', '12 týždňov', 'Autorský dozor zahŕňa návštevy stavby počas realizácie jedenkrát za týždeň', 4, 1, 1),
+(6, 'Zameranie priestoru', '10€/m²', '2 týždne', 'Pre začiatok projekčných prác je potrebné priestor zamerať', 0, 1, 2),
+(7, 'Dispozičné riešenie', '20€/m²', '4 týždne', 'Cena platí pre priestory od 100m²', 1, 1, 2),
+(8, 'Návrh interiéru', 'od 50€/m²', '12 týždňov', 'Cena platí pre priestory od 100m²', 2, 1, 2),
+(9, 'Projekt pre cenovú ponuku', 'od 60€/m²', '12 týždňov', 'Výkresy nábytku na mieru a podrobná špecifikácia použitých prvkov s cenovou ponukou realizácie na kľúč', 3, 1, 2),
+(10, 'Autorský dozor', '40€/hod', '12 týždňov', 'Autorský dozor zahŕňa návštevy stavby počas realizácie jedenkrát za týždeň', 4, 1, 2),
+(11, 'Konzultačné služby', '40€/hod', '2 týždne', 'Pri projektoch s nepredvídateľnou časovou náročnosťou naše služby účtujeme na základe odpracovaných hodín', 0, 1, 3),
+(12, 'Cestovné náklady', '40€/hod + 0,5€/km', '4 týždne', 'Cena za jeden výjazd obsahuje cestovné náklady vrátane času cesty na miesto stavby a nazad.', 1, 1, 3),
+(13, 'Návrh interiéru', 'od 50€/m²', '12 týždňov', 'Cena platí pre priestory od 100m²', 2, 1, 3);
+
+CREATE TABLE `price_groups_sk` (
+  `id` int NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `desc` text,
+  `ordering` int DEFAULT NULL,
+  `published` tinyint DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+INSERT INTO `price_groups_sk` (`id`, `title`, `desc`, `ordering`, `published`) VALUES
+(1, 'Architektúra', '<p>Ponúkame komplexný prístup k architektonickému návrhu budov a stavieb.</p><p>Môžete si u nás objednať architektonický koncept, architektonický návrh a pracovnú projektovú dokumentáciu pre rodinné domy, administratívne komplexy, spotové a relaxačné budovy, bytové domy a budovy služieb, obchodné centrá atď.</p>', 0, 1),
+(2, 'Interiér', '<p>Robíme interiéry všetkých druhov, veľkostí a rozpočtov. Naše riešenia sú jednoduché a funkčné.</p><p>Môžete si u nás objednať koncept, plánovacie riešenie, projekt a pracovnú dokumentáciu pre stavebné práce.</p>', 1, 1),
+(3, 'Ostatné služby', '<p>Doplnkové služby, ktoré nie sú zahrnuté v cene projektových prác, poskytujeme za', 2, 1);
 
 CREATE TABLE `projects_has_categories_sk` (
   `project_id` int NOT NULL,
   `project_category_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
---
--- Дамп данных таблицы `projects_has_categories_sk`
---
 
 INSERT INTO `projects_has_categories_sk` (`project_id`, `project_category_id`) VALUES
 (1, 1),
@@ -71,12 +81,6 @@ INSERT INTO `projects_has_categories_sk` (`project_id`, `project_category_id`) V
 (8, 3),
 (5, 4);
 
--- --------------------------------------------------------
-
---
--- Структура таблицы `projects_sk`
---
-
 CREATE TABLE `projects_sk` (
   `id` int NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -92,10 +96,6 @@ CREATE TABLE `projects_sk` (
   `meta_key` text,
   `meta_description` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
---
--- Дамп данных таблицы `projects_sk`
---
 
 INSERT INTO `projects_sk` (`id`, `title`, `alias`, `intro_text`, `full_text`, `customer`, `image`, `image_ImageWidth`, `image_ImageHeight`, `ordering`, `published`, `meta_key`, `meta_description`) VALUES
 (1, 'Byt', 'flat', 'Dizajn interiéru bytu', '', '', 'flat.jpg', 0, 0, 0, 1, '', ''),
@@ -117,12 +117,6 @@ INSERT INTO `projects_sk` (`id`, `title`, `alias`, `intro_text`, `full_text`, `c
 (17, 'Byt', 'flat_10', 'Dizajn interiéru bytu', '', '', 'flat7.jpg', 0, 0, 16, 1, '', ''),
 (18, 'Byt', 'flat_11', 'Dizajn interiéru bytu', '', '', 'flat8.jpg', 0, 0, 17, 1, '', '');
 
--- --------------------------------------------------------
-
---
--- Структура таблицы `project_categories_sk`
---
-
 CREATE TABLE `project_categories_sk` (
   `id` int NOT NULL,
   `title` varchar(255) NOT NULL DEFAULT '',
@@ -133,21 +127,11 @@ CREATE TABLE `project_categories_sk` (
   `published` tinyint DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
---
--- Дамп данных таблицы `project_categories_sk`
---
-
 INSERT INTO `project_categories_sk` (`id`, `title`, `alias`, `description`, `enabled`, `ordering`, `published`) VALUES
 (1, 'Byty', 'flats', NULL, 1, 0, 1),
 (2, 'Doma', 'houses', NULL, 1, 0, 1),
 (3, 'Kancelárie', 'offices', NULL, 1, 0, 1),
 (4, 'Výstavy', 'exhibitions', NULL, 1, 0, 1);
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `project_files_sk`
---
 
 CREATE TABLE `project_files_sk` (
   `id` int NOT NULL,
@@ -164,12 +148,6 @@ CREATE TABLE `project_files_sk` (
   `project_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
--- --------------------------------------------------------
-
---
--- Структура таблицы `users`
---
-
 CREATE TABLE `users` (
   `id` int NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -179,20 +157,10 @@ CREATE TABLE `users` (
   `block` tinyint DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
---
--- Дамп данных таблицы `users`
---
-
 INSERT INTO `users` (`id`, `name`, `username`, `password`, `usertype`, `block`) VALUES
-(1, 'Petr', 'admin', '01b307acba4f54f55aafc33bb06bbbf6ca803e9a', 1, 0);
+(1, 'Petr', 'admin', '$2y$10$y8o9.eEMHVnrqcOP/oCNqujEERlJhm7X4At3NiLo4MiVvmCwhVMC2', 1, 0);
 
---
--- Индексы сохранённых таблиц
---
 
---
--- Индексы таблицы `crm`
---
 ALTER TABLE `crm`
   ADD PRIMARY KEY (`id`),
   ADD KEY `email_idx` (`email`) INVISIBLE,
@@ -200,94 +168,74 @@ ALTER TABLE `crm`
   ADD KEY `replied_at_idx` (`replied_at`),
   ADD KEY `name_idx` (`name`) USING BTREE;
 
---
--- Индексы таблицы `projects_has_categories_sk`
---
+ALTER TABLE `prices_sk`
+  ADD PRIMARY KEY (`id`,`price_group_id`),
+  ADD KEY `title_idx` (`title`),
+  ADD KEY `fk_prices_sk_price_groups_sk1_idx` (`price_group_id`),
+  ADD KEY `ordering_idx` (`ordering`),
+  ADD KEY `published_idx` (`published`);
+
+ALTER TABLE `price_groups_sk`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `title_idx` (`title`),
+  ADD KEY `ordering_idx` (`ordering`) INVISIBLE,
+  ADD KEY `published_idx` (`published`);
+
 ALTER TABLE `projects_has_categories_sk`
   ADD PRIMARY KEY (`project_id`,`project_category_id`),
   ADD KEY `project_category_id_idx` (`project_category_id`),
   ADD KEY `project_id_idx` (`project_id`) INVISIBLE;
 
---
--- Индексы таблицы `projects_sk`
---
 ALTER TABLE `projects_sk`
   ADD PRIMARY KEY (`id`),
   ADD KEY `published_idx` (`published`),
   ADD KEY `ordering_idx` (`ordering`);
 
---
--- Индексы таблицы `project_categories_sk`
---
 ALTER TABLE `project_categories_sk`
   ADD PRIMARY KEY (`id`),
   ADD KEY `published_idx` (`published`),
   ADD KEY `ordering_idx` (`ordering`);
 
---
--- Индексы таблицы `project_files_sk`
---
 ALTER TABLE `project_files_sk`
   ADD PRIMARY KEY (`id`),
   ADD KEY `published_idx` (`published`),
   ADD KEY `ordering_idx` (`ordering`),
   ADD KEY `project_id_idx` (`project_id`);
 
---
--- Индексы таблицы `users`
---
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username_idx` (`username`);
 
---
--- AUTO_INCREMENT для сохранённых таблиц
---
 
---
--- AUTO_INCREMENT для таблицы `crm`
---
 ALTER TABLE `crm`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT для таблицы `projects_sk`
---
+ALTER TABLE `prices_sk`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+ALTER TABLE `price_groups_sk`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
 ALTER TABLE `projects_sk`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
---
--- AUTO_INCREMENT для таблицы `project_categories_sk`
---
 ALTER TABLE `project_categories_sk`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
---
--- AUTO_INCREMENT для таблицы `project_files_sk`
---
 ALTER TABLE `project_files_sk`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=684;
 
---
--- AUTO_INCREMENT для таблицы `users`
---
 ALTER TABLE `users`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
---
--- Ограничения внешнего ключа сохраненных таблиц
---
 
---
--- Ограничения внешнего ключа таблицы `projects_has_categories_sk`
---
+ALTER TABLE `prices_sk`
+  ADD CONSTRAINT `fk_prices_sk_price_groups_sk1` FOREIGN KEY (`price_group_id`) REFERENCES `price_groups_sk` (`id`);
+
 ALTER TABLE `projects_has_categories_sk`
   ADD CONSTRAINT `projects_has_categories_sk_project_categories_sk_fkey` FOREIGN KEY (`project_category_id`) REFERENCES `project_categories_sk` (`id`),
   ADD CONSTRAINT `projects_has_categories_sk_projects_sk_fkey` FOREIGN KEY (`project_id`) REFERENCES `projects_sk` (`id`);
 
---
--- Ограничения внешнего ключа таблицы `project_files_sk`
---
 ALTER TABLE `project_files_sk`
   ADD CONSTRAINT `project_files_sk_projects_sk_fkey` FOREIGN KEY (`project_id`) REFERENCES `projects_sk` (`id`);
 COMMIT;
