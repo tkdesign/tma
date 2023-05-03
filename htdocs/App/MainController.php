@@ -10,6 +10,34 @@ namespace App;
 class MainController extends Controller
 {
 
+    private $is_admin;
+
+    /**
+     * MainController konstructor.
+     */
+    public function __construct()
+    {
+        $this->is_admin = false;
+        if (isset($_COOKIE[session_name()])) {
+            session_start();
+            if (isset($_SESSION['username']) && isset($_SESSION['crypt']) && $_COOKIE[session_name()] == session_id()) {
+                $app = Base::getInstance();
+                $config = $app->getConfig();
+                $model = new UsersModel($config);
+                $admin_profile = $model->get_user_by_username($_SESSION['username']);
+                $crypt = $admin_profile[0]["password"];
+                if ($_SESSION['username'] != $admin_profile[0]["username"] || $_SESSION['crypt'] != $crypt) {
+                    $this->login($app);
+                }
+                $tmp_time = time();
+                if (($_SESSION['lastseen'] + $config['expiry'] * 3600) < $tmp_time) {
+                    $this->logout($app);
+                }
+                $this->is_admin = true;
+            }
+        }
+    }
+
     /**
      * Metóda mapovania pravidiel routovania na konkrétne akcie v kontroléri.
      * @param string $function Názov metódy, ktorá sa má zavolať
@@ -72,7 +100,6 @@ class MainController extends Controller
         $inc = 'prices';
         $page_title = 'TM Architektúra. Cenník';
         $page_desc = 'Aktuálny cenník architektonických návrhov';
-        $price_groups =
         $config = $app->getConfig();
         $model = new PricesModel($config);
         $price_groups = $model->get_price_groups();
@@ -92,12 +119,6 @@ class MainController extends Controller
         $inc = 'contacts';
         $page_title = 'TM Architektúra. Kontakt';
         $page_desc = 'Adresa, kontaktné údaje a formulár spätnej väzby';
-        /*session_start();
-        if (!isset($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
-        $token = $_SESSION['csrf_token']; // передаете на форму.
-        session_start();*/
         $config = $app->getConfig();
         /* Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
         $token = hash_hmac('sha256', microtime(true) . mt_rand(), $config["secret_key"]);
@@ -125,7 +146,7 @@ class MainController extends Controller
                 $err_msg[] = "Chyba tokenu anti-CSRF";
             } else {
                 session_start();
-                if(hash_equals($_SESSION['csrf_token'], $fields->token)) {
+                if (hash_equals($_SESSION['csrf_token'], $fields->token)) {
                     // Kontrola platnosti tokenu
                     $token_life = 3600; // Maximálna platnosť tokenu v sekundách
                     $current_time = time();
@@ -161,6 +182,74 @@ class MainController extends Controller
         $page_desc = 'Adresa, kontaktné údaje a formulár spätnej väzby';
         include_once 'ui/layout.php';
 
+    }
+
+    /**
+     * Metóda zobrazenia formulára na autorizáciu na webovej stránke
+     * @param Base $app Inštancia triedy Base
+     */
+    public function login($app)
+    {
+        $inc = 'login';
+        $page_title = 'TM Architektúra. Login';
+        $page_desc = 'Vstup do backendu';
+        $config = $app->getConfig();
+        /* Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
+        $token = hash_hmac('sha256', microtime(true) . mt_rand(), $config["secret_key"]);
+        setcookie("sent", true, time() + $config['expiry'] * 3600);
+        session_start();
+        $_SESSION['csrf_token_login'] = $token;
+        $_SESSION['csrf_token_time_login'] = time();
+        /* //Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
+        include_once 'ui/layout.php';
+    }
+
+    /**
+     * Metóda zrušenia autorizácie a presmerovania na autorizačnú stránku
+     * @param Base $app Inštancia triedy Base
+     */
+    public function logout($app)
+    {
+        if ($this->is_admin) {
+            session_start();
+            unset($_SESSION['username']);
+            unset($_SESSION['crypt']);
+            unset($_SESSION['lastseen']);
+            header('Location: /login.html');
+            exit();
+        }
+    }
+
+
+    /**
+     * Metóda na spracovanie požiadavky POST z autorizačného formulára.
+     * @param Base $app Inštancia triedy Base
+     */
+    public function auth($app)
+    {
+        $err_msg = "";
+        if (!isset($_COOKIE['sent'])) {
+            $err_msg = 'Pre vstup do tejto oblasti musia byť povolené cookies';
+        } else {
+            $config = $app->getConfig();
+            $model = new UsersModel($config);
+            $admin_profile = $model->get_user_by_username($_POST['username']);
+            $crypt = $admin_profile[0]["password"];
+            if ($_POST['username'] != $admin_profile[0]["username"] || !password_verify($_POST['password'], $crypt)) {
+                $err_msg = "Nesprávne ID používateľa alebo heslo";
+            } else {
+                setcookie('sent', '', (time() - 365 * 24 * 60 * 60), '/');
+                session_start();
+                unset($_SESSION['csrf_token_login']);
+                unset($_SESSION['csrf_token_time_login']);
+                $_SESSION['username'] = $admin_profile[0]["username"];
+                $_SESSION['crypt'] = $crypt;
+                $_SESSION['lastseen'] = time();
+                header('Location: /projects.html');
+                exit();
+            }
+        }
+        $this->login($app);
     }
 
 }

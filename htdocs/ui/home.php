@@ -43,6 +43,9 @@
                             <li class="nav-item"><a class="nav-link" href="projects.html">Projekty</a></li>
                             <li class="nav-item"><a class="nav-link" href="prices.html">Cenník</a></li>
                             <li class="nav-item"><a class="nav-link" href="contacts.html">Kontakt</a></li>
+                            <?php if($this->is_admin): ?>
+                            <li class="nav-item"><a class="nav-link" href="logout.html">Logout</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                     <!-- //Horné menu -->

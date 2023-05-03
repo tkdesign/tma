@@ -35,11 +35,14 @@
         <!-- Horné menu -->
         <div class="collapse navbar-collapse justify-content-end" id="navbarCollapseContainer">
             <ul class="navbar-nav">
-                <li class="nav-item"<?=($inc=="projects"?" aria-current=\"page\"":"")?>><a class="nav-link<?=($inc=="main"?" active":"")?>" href="/">Domov</a></li>
+                <li class="nav-item"<?=($inc=="main"?" aria-current=\"page\"":"")?>><a class="nav-link<?=($inc=="main"?" active":"")?>" href="/">Domov</a></li>
                 <li class="nav-item"<?=($inc=="projects"?" aria-current=\"page\"":"")?>><a class="nav-link<?=($inc=="projects"?" active":"")?>"
                                                             href="projects.html">Projekty</a></li>
-                <li class="nav-item"<?=($inc=="projects"?" aria-current=\"page\"":"")?>><a class="nav-link<?=($inc=="prices"?" active":"")?>" href="prices.html">Cenník</a></li>
-                <li class="nav-item"<?=($inc=="projects"?" aria-current=\"page\"":"")?>><a class="nav-link<?=($inc=="contacts"?" active":"")?>" href="contacts.html">Kontakt</a></li>
+                <li class="nav-item"<?=($inc=="prices"?" aria-current=\"page\"":"")?>><a class="nav-link<?=($inc=="prices"?" active":"")?>" href="prices.html">Cenník</a></li>
+                <li class="nav-item"<?=($inc=="contacts"?" aria-current=\"page\"":"")?>><a class="nav-link<?=($inc=="contacts"?" active":"")?>" href="contacts.html">Kontakt</a></li>
+                <?php if($this->is_admin): ?>
+                <li class="nav-item"><a class="nav-link" href="logout.html">Logout</a></li>
+                <?php endif; ?>
             </ul>
         </div>
         <!-- //Horné menu -->

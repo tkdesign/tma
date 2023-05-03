@@ -20,12 +20,27 @@ abstract class Model
     public function __construct($config)
     {
         $this->config = $config;
+        if (!$this->connect()) {
+            echo "Error: Can't connect to a database!";
+            exit();
+        }
     }
 
     /**
-     * Definovanie metódy triedy modelu na pripojenie k databáze.
+     * Implementácia metódy na pripojenie k databáze
      * @return bool Stav pripojenia
      */
-    abstract public function connect();
+    public function connect()
+    {
+        try {
+            if (!isset($this->config['db_username']) || !isset($this->config['db_name'])) {
+                throw new \Exception();
+            }
+            $this->db = new \PDO("mysql:host=" . (isset($this->config['db_host']) ? $this->config['db_host'] : "127.0.0.1") . ";dbname=" . $this->config['db_name'], $this->config['db_username'], $this->config['db_password']);
+        } catch (\Exception $err) {
+            return false;
+        }
+        return true;
+    }
 
 }
