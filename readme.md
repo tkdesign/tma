@@ -1,7 +1,5 @@
 # skriptovacie-jazyky-2023-po
 
----
-
 ## About
 
 Project of the website of an architectural bureau. 
