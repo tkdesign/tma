@@ -118,25 +118,6 @@ class Base
     }
 
     /**
-     * Metóda odoslania odpovede servera vo formáte application/json
-     * @param int $success Kód odpovede servera
-     * @param string $data Serializované údaje vo formáte JSON
-     */
-    public function returnJsonHttpResponse($success, $data)
-    {
-        ob_clean();
-        header_remove();
-        header("Content-type: application/json; charset=utf-8");
-        if ($success) {
-            http_response_code(200);
-        } else {
-            http_response_code(500);
-        }
-        echo $data;
-        exit();
-    }
-
-    /**
      * Getter konfiguračného dátového poľa
      * @return array
      */
