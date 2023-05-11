@@ -2,6 +2,8 @@
 
 namespace App;
 
+use stdClass;
+
 /**
  * Class MainController
  * Trieda kontroléra spravuje vstupné požiadavky od používateľa a zabezpečuje správne priradenie požiadaviek k modelu alebo zobrazeniu.
@@ -10,10 +12,11 @@ namespace App;
 class MainController extends Controller
 {
 
-    private $is_admin;
+    private bool $is_admin;
 
     /**
-     * MainController konstructor.
+     * MainController constructor.
+     * @param string $args reťazec parametrov z url
      */
     public function __construct($args)
     {
@@ -139,7 +142,7 @@ class MainController extends Controller
      */
     public function confirmation($app)
     {
-        $fields = new \stdClass();
+        $fields = new stdClass();
         foreach ($_POST as $key => $value) {
             $fields->$key = $value;
         }
@@ -189,28 +192,6 @@ class MainController extends Controller
     }
 
     /**
-     * Metóda zobrazenia formulára na autorizáciu na webovej stránke
-     * @param Base $app Inštancia triedy Base
-     */
-    public function login($app)
-    {
-        if(!isset($_SESSION)) {
-            session_start();
-        }
-        $inc = 'login';
-        $page_title = 'TM Architektúra. Login';
-        $page_desc = 'Vstup do backendu';
-        $config = $app->getConfig();
-        /* Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
-        $token = hash_hmac('sha256', microtime(true) . mt_rand(), $config["secret_key"]);
-        setcookie("sent", true, time() + $config['expiry'] * 3600);
-        $_SESSION['csrf_token_login'] = $token;
-        $_SESSION['csrf_token_time_login'] = time();
-        /* //Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
-        include_once 'ui/layout.php';
-    }
-
-    /**
      * Metóda zrušenia autorizácie a presmerovania na autorizačnú stránku
      * @param Base $app Inštancia triedy Base
      */
@@ -223,7 +204,6 @@ class MainController extends Controller
             exit();
         }
     }
-
 
     /**
      * Metóda na spracovanie požiadavky POST z autorizačného formulára.
@@ -238,21 +218,47 @@ class MainController extends Controller
             $config = $app->getConfig();
             $model = new UsersModel($config);
             $admin_profile = $model->get_user_by_username($_POST['username']);
-            $crypt = $admin_profile[0]["password"];
-            if ($_POST['username'] != $admin_profile[0]["username"] || !password_verify($_POST['password'], $crypt)) {
-                $err_msg = "Nesprávne ID používateľa alebo heslo";
+            if(count($admin_profile)>0) {
+                $crypt = $admin_profile[0]["password"];
+                if ($_POST['username'] != $admin_profile[0]["username"] || !password_verify($_POST['password'], $crypt)) {
+                    $err_msg = "Nesprávne ID používateľa alebo heslo";
+                } else {
+                    session_start();
+                    session_unset();
+                    setcookie('sent', '', (time() - 365 * 24 * 60 * 60), '/');
+                    $_SESSION['username'] = $admin_profile[0]["username"];
+                    $_SESSION['crypt'] = $crypt;
+                    $_SESSION['lastseen'] = time();
+                    header('Location: /dashboard.html');
+                    exit();
+                }
             } else {
-                session_start();
-                session_unset();
-                setcookie('sent', '', (time() - 365 * 24 * 60 * 60), '/');
-                $_SESSION['username'] = $admin_profile[0]["username"];
-                $_SESSION['crypt'] = $crypt;
-                $_SESSION['lastseen'] = time();
-                header('Location: /dashboard.html');
-                exit();
+                $err_msg = "Nesprávne ID používateľa alebo heslo";
             }
         }
         $this->login($app);
+    }
+
+    /**
+     * Metóda zobrazenia formulára na autorizáciu na webovej stránke
+     * @param Base $app Inštancia triedy Base
+     */
+    public function login($app)
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $inc = 'login';
+        $page_title = 'TM Architektúra. Login';
+        $page_desc = 'Vstup do backendu';
+        $config = $app->getConfig();
+        /*Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára*/
+        $token = hash_hmac('sha256', microtime(true) . mt_rand(), $config["secret_key"]);
+        setcookie("sent", true, time() + $config['expiry'] * 3600);
+        $_SESSION['csrf_token_login'] = $token;
+        $_SESSION['csrf_token_time_login'] = time();
+        /*//Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára*/
+        include_once 'ui/layout.php';
     }
 
     /**
@@ -283,7 +289,7 @@ class MainController extends Controller
             if ($url_parameters !== null && property_exists($url_parameters, "page")) {
                 unset($url_parameters->page);
             }
-            $count_pages = ceil((int)$total[0]["count_rows"]/(int)$config["crm_records_per_page"]);
+            $count_pages = ceil((int)$total[0]["count_rows"] / (int)$config["crm_records_per_page"]);
             $inc = 'dashboard';
             $page_title = 'TM Architektúra. Dashboard';
             $page_desc = 'Správa a monitorovanie';
@@ -294,6 +300,10 @@ class MainController extends Controller
         }
     }
 
+    /**
+     * Metóda odstránenia položky z databázy crm
+     * @param Base $app Inštancia triedy Base
+     */
     public function delete_request($app)
     {
         if ($this->is_admin) {
@@ -304,9 +314,9 @@ class MainController extends Controller
                 $total = $model->get_count_rows_in_crm();
                 $url_parameters = $this->args;
                 $page = 1;
-                if($total > 0) {
-                    $count_pages = ceil((int)$total[0]["count_rows"]/(int)$config["crm_records_per_page"]);
-                    $page = (property_exists($this->args, "page")?$this->args->page:1);
+                if ($total > 0) {
+                    $count_pages = ceil((int)$total[0]["count_rows"] / (int)$config["crm_records_per_page"]);
+                    $page = (property_exists($this->args, "page") ? $this->args->page : 1);
                 }
                 if ($url_parameters !== null) {
                     if (property_exists($url_parameters, "page")) {
@@ -325,6 +335,10 @@ class MainController extends Controller
         }
     }
 
+    /**
+     * Metóda označenia položky v databáze crm ako položky, na ktorú bolo odpovedané
+     * @param Base $app Inštancia triedy Base
+     */
     public function reply_request($app)
     {
         if ($this->is_admin) {
@@ -335,9 +349,9 @@ class MainController extends Controller
                 $total = $model->get_count_rows_in_crm();
                 $url_parameters = $this->args;
                 $page = 1;
-                if($total > 0) {
-                    $count_pages = ceil((int)$total[0]["count_rows"]/(int)$config["crm_records_per_page"]);
-                    $page = (property_exists($this->args, "page")?$this->args->page:1);
+                if ($total > 0) {
+                    $count_pages = ceil((int)$total[0]["count_rows"] / (int)$config["crm_records_per_page"]);
+                    $page = (property_exists($this->args, "page") ? $this->args->page : 1);
                 }
                 if ($url_parameters !== null) {
                     if (property_exists($url_parameters, "page")) {

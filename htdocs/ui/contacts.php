@@ -18,7 +18,7 @@
     <section class="p-5">
         <h1>Kontaktný formulár</h1>
         <!-- Formulár, ktorý po validácii odosiela údaje na stránku s názvom "confirmation.html" (stránka s poďakovaním) na "serveri" -->
-        <form method="post" action="confirmation.html" class="col-md-6 needs-validation">
+        <form method="post" action="/confirmation.html" class="col-md-6 needs-validation">
             <!-- CSRF token -->
             <input type="hidden" name="token" value="<?=$token?>">
             <!-- //CSRF token -->

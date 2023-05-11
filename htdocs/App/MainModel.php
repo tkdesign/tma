@@ -2,6 +2,10 @@
 
 namespace App;
 
+use Exception;
+use PDO;
+use stdClass;
+
 /**
  * Class MainModel
  * Trieda modelu reprezentuje dáta a logiku aplikácie.
@@ -15,7 +19,7 @@ class MainModel extends Model
      * @param int $offset Odsadenie od začiatku
      * @param int $limit Limit položiek v dotaze
      * @param string $lang Prípona tabuľky
-     * @return |null Vracia zoznam projektov
+     * @return array|null Vracia zoznam projektov
      */
     public function get_projects($offset = -1, $limit = -1, $lang = "sk")
     {
@@ -29,8 +33,8 @@ class MainModel extends Model
         }
         $result = null;
         try {
-            $result = $this->db->query("SELECT * FROM projects_$lang WHERE published=1 ORDER BY ordering" . (!empty($lim) ? " LIMIT $lim" : "") . ";")->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $err) {
+            $result = $this->db->query("SELECT * FROM projects_$lang WHERE published=1 ORDER BY ordering" . (!empty($lim) ? " LIMIT $lim" : "") . ";")->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
         }
         return $result;
     }
@@ -38,21 +42,21 @@ class MainModel extends Model
     /**
      * Metóda na získanie počtu riadkov v tabuľke projects_$lang
      * @param string $lang Prípona tabuľky
-     * @return |null Vracia počet riadkov v tabuľke
+     * @return array|null Vracia počet riadkov v tabuľke
      */
     public function get_count_rows_in_projects($lang = "sk")
     {
         $total = null;
         try {
-            $total = $this->db->query("SELECT COUNT(*) AS count_rows FROM projects_$lang WHERE published=1;")->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $err) {
+            $total = $this->db->query("SELECT COUNT(*) AS count_rows FROM projects_$lang WHERE published=1;")->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
         }
         return $total;
     }
 
     /**
      * Metóda pridávania nových kontaktných informácií návštevníkov webovej stránky do databázy
-     * @param $fields Polia formulára
+     * @param stdClass $fields Polia formulára
      * @return bool Vracia stav vloženia reťazca do databázy
      */
     public function toCRM($fields)
@@ -63,19 +67,13 @@ class MainModel extends Model
             ':request' => $fields->request
         );
         $stmt = $this->db->prepare('INSERT INTO crm SET name=:name, email=:email, request=:request, created_at=NOW()');
-        $result = $stmt->execute($data);
-        /*if (!$result) {
-            $error = $stmt->errorInfo();
-            echo "Chyba: " . $error[2];
-        }*/
-        return $result;
+        return $stmt->execute($data);
     }
 
     /**
      * Metóda načítania zoznamu požiadaviek z databázy
      * @param int $offset Odsadenie od začiatku
      * @param int $limit Limit položiek v dotaze
-     * @param string $lang Prípona tabuľky
      * @return array|null Vracia zoznam požiadaviek
      */
     public function get_crm($offset = -1, $limit = -1)
@@ -90,8 +88,8 @@ class MainModel extends Model
         }
         $result = null;
         try {
-            $result = $this->db->query("SELECT * FROM crm ORDER BY id" . (!empty($lim) ? " LIMIT $lim" : "") . ";")->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $err) {
+            $result = $this->db->query("SELECT * FROM crm ORDER BY id" . (!empty($lim) ? " LIMIT $lim" : "") . ";")->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
         }
         return $result;
     }
@@ -104,8 +102,8 @@ class MainModel extends Model
     {
         $total = null;
         try {
-            $total = $this->db->query("SELECT COUNT(*) AS count_rows FROM crm;")->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $err) {
+            $total = $this->db->query("SELECT COUNT(*) AS count_rows FROM crm;")->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
         }
         return $total;
     }
@@ -121,12 +119,7 @@ class MainModel extends Model
             ':id' => $id
         );
         $stmt = $this->db->prepare('DELETE FROM crm WHERE id=:id');
-        $result = $stmt->execute($data);
-        /*if (!$result) {
-            $error = $stmt->errorInfo();
-            echo "Chyba: " . $error[2];
-        }*/
-        return $result;
+        return $stmt->execute($data);
     }
 
     /**
@@ -140,11 +133,6 @@ class MainModel extends Model
             ':id' => $id
         );
         $stmt = $this->db->prepare('UPDATE crm SET replied_at=NOW() WHERE id=:id');
-        $result = $stmt->execute($data);
-        /*if (!$result) {
-            $error = $stmt->errorInfo();
-            echo "Chyba: " . $error[2];
-        }*/
-        return $result;
+        return $stmt->execute($data);
     }
 }

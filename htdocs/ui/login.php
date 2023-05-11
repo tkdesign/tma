@@ -6,7 +6,7 @@
     <hr>
     <!-- Blok formulára -->
     <section class="p-5">
-        <form method="post" action="auth.html" class="col-md-6 needs-validation">
+        <form method="post" action="/auth.html" class="col-md-6 needs-validation">
             <!-- CSRF token -->
             <input type="hidden" name="token" value="<?=$token?>">
             <!-- //CSRF token -->

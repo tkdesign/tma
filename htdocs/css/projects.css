@@ -8,10 +8,7 @@
 }
 @media screen and (max-width: 750px) {
     .card {
-        margin-top: 0px;
-        margin-right: auto;
-        margin-bottom: 2rem;
-        margin-left: auto;
+        margin: 0 auto 2rem;
         flex-basis: 100%;
     }
 }

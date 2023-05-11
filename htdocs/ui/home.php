@@ -12,8 +12,8 @@
     <!-- Štýly aj Javascript sú v samostatných súboroch -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous"><!-- Štýly Bootstrap 5 -->
-    <link href="css/main.css" rel="stylesheet"><!-- Spoločné štýly pre všetky stránky -->
-    <link href="css/home.css" rel="stylesheet"><!-- Individuálne štýly aktuálnej stránky -->
+    <link href="/css/main.css" rel="stylesheet"><!-- Spoločné štýly pre všetky stránky -->
+    <link href="/css/home.css" rel="stylesheet"><!-- Individuálne štýly aktuálnej stránky -->
     <!-- //Štýly aj Javascript sú v samostatných súboroch -->
     <title><?=$page_title?></title>
 </head>
@@ -40,12 +40,12 @@
                         <ul class="navbar-nav">
                             <li class="nav-item" aria-current="page"><a class="nav-link active"
                                     href="/">Domov</a></li>
-                            <li class="nav-item"><a class="nav-link" href="projects.html">Projekty</a></li>
-                            <li class="nav-item"><a class="nav-link" href="prices.html">Cenník</a></li>
-                            <li class="nav-item"><a class="nav-link" href="contacts.html">Kontakt</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/projects.html">Projekty</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/prices.html">Cenník</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/contacts.html">Kontakt</a></li>
                             <?php if($this->is_admin): ?>
-                            <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link" href="logout.html">Logout</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/logout.html">Logout</a></li>
                             <?php endif; ?>
                         </ul>
                     </div>

@@ -1,7 +1,7 @@
 <?php
 require "App/config.php"; // pripojenie konfiguračného modulu
 
-$app = require $config["app_folder"].DIRECTORY_SEPARATOR.'Base.php'; // jediný exemplár triedy Base (Singleton)
+$app = require $config["app_folder"] . DIRECTORY_SEPARATOR . 'Base.php'; // jediný exemplár triedy Base (Singleton)
 
 /*Pravidlá routovania*/
 $app->addRoute('GET /', 'MainController->home');

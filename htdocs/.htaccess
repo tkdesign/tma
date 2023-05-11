@@ -31,8 +31,8 @@ RewriteRule .* index.php [F]
 
 # Block access to some files and folders
 RewriteRule ^\.(sql|bak)$ - [R=404]
-RewriteRule ^(ui)\/ - [R=404]
-RewriteRule ^(App)\/ - [R=404]
+RewriteRule ^(ui)/ - [R=404]
+RewriteRule ^(App)/ - [R=404]
 
 # If the requested file is not among the links, redirect it to index.php
 RewriteCond %{REQUEST_FILENAME} !-l

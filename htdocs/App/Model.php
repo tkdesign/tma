@@ -2,6 +2,9 @@
 
 namespace App;
 
+use Exception;
+use PDO;
+
 /**
  * Class Model
  * Abstraktná trieda modelu
@@ -9,13 +12,13 @@ namespace App;
  */
 abstract class Model
 {
-    protected $db;
-    protected $config;
+    protected PDO $db;
+    protected array $config;
 
     /**
      * Konštruktor triedy Model
      * Metóda, ktorá sa volá pri vytváraní inštancie triedy a slúži na inicializáciu jej vlastností.
-     * @param $data
+     * @param array $config
      */
     public function __construct($config)
     {
@@ -34,10 +37,10 @@ abstract class Model
     {
         try {
             if (!isset($this->config['db_username']) || !isset($this->config['db_name'])) {
-                throw new \Exception();
+                throw new Exception();
             }
-            $this->db = new \PDO("mysql:host=" . (isset($this->config['db_host']) ? $this->config['db_host'] : "127.0.0.1") . ";dbname=" . $this->config['db_name'], $this->config['db_username'], $this->config['db_password']);
-        } catch (\Exception $err) {
+            $this->db = new PDO("mysql:host=" . (isset($this->config['db_host']) ? $this->config['db_host'] : "127.0.0.1") . ";dbname=" . $this->config['db_name'], $this->config['db_username'], $this->config['db_password']);
+        } catch (Exception $err) {
             return false;
         }
         return true;

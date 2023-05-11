@@ -2,6 +2,8 @@
 
 namespace App;
 
+use stdClass;
+
 /**
  * Class Base
  * Trieda Base je dispatcher/router/render. Určuje, ktorý kontrolér a akciu treba volať na základe URL adresy požiadavky
@@ -11,8 +13,8 @@ namespace App;
 class Base
 {
     private static $_instance = null;
-    private $ROUTES;
-    private $config;
+    private array $ROUTES;
+    private array $config;
 
     /**
      * Base constructor.
@@ -20,18 +22,18 @@ class Base
      */
     private function __construct()
     {
-        ini_set('default_charset', $charset = 'UTF-8'); // установка в качестве кодировки по умолчанию кодировки юникод для обработки данных при передаче между клиентом и сервером
+        ini_set('default_charset', $charset = 'UTF-8'); // nastavenie predvoleného kódovania na unicode pre spracovanie údajov pri prenose medzi klientom a serverom
         if (extension_loaded('mbstring')) {
-            mb_internal_encoding($charset); // установка кодировки юникод для функций из расширения php mbstring
+            mb_internal_encoding($charset); // nastavenie kódovania unicode pre funkcie z rozšírenia php mbstring
         }
-        /*Настрйка вывода сообщений об ошибках*/
+        /*Nastavenie výstupu chybových správ*/
         ini_set('display_errors', 1);
         error_reporting((E_ALL | E_STRICT) & ~(E_NOTICE | E_USER_NOTICE));
-        /*//Настрйка вывода сообщений об ошибках*/
+        /*//Nastavenie výstupu chybových správ**/
         if (!isset($_SERVER['SERVER_NAME']) || $_SERVER['SERVER_NAME'] === '') {
             $_SERVER['SERVER_NAME'] = gethostname();
         }
-        /*Регистрация анонимной функции для автозагрузки классов*/
+        /*Registrácia anonymnej funkcie pre automatické načítanie tried*/
         spl_autoload_register(function ($class) {
             $file = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
             if (file_exists($file)) {
@@ -40,7 +42,6 @@ class Base
             }
             return false;
         });
-//        self::$_instance = $this;
     }
 
     /**
@@ -70,14 +71,12 @@ class Base
     /**
      * Metóda centrálneho kontroléra (front controller), ktorá je zodpovedná za spracovanie požiadaviek na základe
      * pravidla smerovania.
+     * @param array $config Pole s nastaveniami webovej stránky
      */
     public function run($config)
     {
         $this->config = $config;
         $urlArr = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        /*if ($urlArr[mb_strlen($urlArr) - 1] != '/') {
-            $urlArr .= '/';
-        }*/
         $key = array_search($_SERVER['REQUEST_METHOD'] . ' ' . $urlArr, array_column($this->ROUTES, 0));
         list($class, $func) = explode('->', $this->ROUTES[$key][1]);
         if ($key !== false) {
@@ -97,6 +96,7 @@ class Base
      * Spôsob prípravy reprezentácie dátového modelu pomocou kontroléra
      * @param string $controllername Názov triedy kontroléra
      * @param string $func Názov metódy kontroléra
+     * @noinspection PhpUndefinedMethodInspection
      */
     private function render($controllername, $func)
     {
@@ -140,27 +140,23 @@ class Base
      * Getter konfiguračného dátového poľa
      * @return array
      */
-    public function getConfig() {
+    public function getConfig()
+    {
         return $this->config;
     }
 
     /**
      * Metóda na prevod dvojrozmerného asociatívneho poľa (kľúč:hodnota) na reťazec, ktorý sa pridá do url ako reťazec parametrov.
-     * @param array $obj Asociatívne pole na vstupe
+     * @param stdClass $obj Asociatívne pole na vstupe
      * @return string Reťazec, ktorý sa pridá do url ako reťazec parametrov
      */
-    public function parseObject($obj) {
-        $result='';
-        //if(is_array($obj)) {
-            /*foreach ($obj as $key=>$value) {
-                $result+=($result?$result.'&':'').$key."=".$value;
-            }*/
-            $result = implode("&", array_map( function($key, $value) { return $key . "=" . $value; }, array_keys(get_object_vars($obj)), array_values(get_object_vars($obj)) ));
-       // }
-        return $result;
+    public function parseObject($obj)
+    {
+        return implode("&", array_map(function ($key, $value) {
+            return $key . "=" . $value;
+        }, array_keys(get_object_vars($obj)), array_values(get_object_vars($obj))));
     }
-
 
 }
 
-return Base::getInstance();
+return Base::getInstance(); // Vrátiť jednu inštanciu objektu triedy Base

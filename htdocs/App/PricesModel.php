@@ -3,6 +3,9 @@
 
 namespace App;
 
+use Exception;
+use PDO;
+
 /**
  * Class PricesModel
  * Trieda na prácu s tabuľkami prices_$lang a prices_groups_$lang
@@ -20,8 +23,8 @@ class PricesModel extends Model
     {
         $result = null;
         try {
-            $result = $this->db->query("SELECT * FROM price_groups_$lang WHERE published=1 ORDER BY ordering;")->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $err) {
+            $result = $this->db->query("SELECT * FROM price_groups_$lang WHERE published=1 ORDER BY ordering;")->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
         }
         return $result;
     }
@@ -36,8 +39,8 @@ class PricesModel extends Model
     {
         $result = null;
         try {
-            $result = $this->db->query("SELECT * FROM prices_$lang WHERE price_group_id=$group_id AND published=1 ORDER BY ordering;")->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $err) {
+            $result = $this->db->query("SELECT * FROM prices_$lang WHERE price_group_id=$group_id AND published=1 ORDER BY ordering;")->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $err) {
         }
         return $result;
     }

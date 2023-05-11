@@ -3,6 +3,8 @@
 
 namespace App;
 
+use Exception;
+
 /**
  * Class UsersModel
  * Trieda na prácu s tabuľkou `users`
@@ -26,7 +28,7 @@ class UsersModel extends Model
             $stmt = $this->db->prepare("SELECT * FROM users WHERE username=:username AND usertype=1 AND block=0 LIMIT 1");
             $stmt->execute($data);
             $result = $stmt->fetchAll();
-        } catch (\Exception $err) {
+        } catch (Exception $err) {
         }
         return $result;
     }
