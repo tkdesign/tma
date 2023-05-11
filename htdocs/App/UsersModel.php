@@ -18,7 +18,7 @@ class UsersModel extends Model
      * @param string $username Meno používateľa v databáze
      * @return array|null Vracia informácie o používateľovi z databázy
      */
-    public function get_user_by_username($username)
+    public function readUser($username)
     {
         $result = null;
         try {

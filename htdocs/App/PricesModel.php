@@ -19,7 +19,7 @@ class PricesModel extends Model
      * @param string $lang Prípona tabuľky
      * @return array|null Vracia zoznam skupin
      */
-    public function get_price_groups($lang = "sk")
+    public function readPriceGroups($lang = "sk")
     {
         $result = null;
         try {
@@ -35,7 +35,7 @@ class PricesModel extends Model
      * @param string $lang Prípona tabuľky
      * @return array|null Vracia zoznam cenníkov
      */
-    public function get_prices_by_group_id($group_id, $lang = "sk")
+    public function readPrices($group_id, $lang = "sk")
     {
         $result = null;
         try {

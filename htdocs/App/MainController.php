@@ -28,7 +28,7 @@ class MainController extends Controller
                 $app = Base::getInstance();
                 $config = $app->getConfig();
                 $model = new UsersModel($config);
-                $admin_profile = $model->get_user_by_username($_SESSION['username']);
+                $admin_profile = $model->readUser($_SESSION['username']);
                 $crypt = $admin_profile[0]["password"];
                 if ($_SESSION['username'] !== $admin_profile[0]["username"] || $_SESSION['crypt'] !== $crypt) {
                     session_destroy();
@@ -76,20 +76,20 @@ class MainController extends Controller
         $config = $app->getConfig();
         $model = new MainModel($config);
         $is_next_page = false;
-        $total = $model->get_count_rows_in_projects();
+        $total = $model->readCountProjects();
         if ($this->args !== null && property_exists($this->args, "page") && (int)$this->args->page > 1) {
             $page = intval($this->args->page);
             if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["project_cards_per_page"] * $page) {
                 $is_next_page = true;
             }
-            $projects = $model->get_projects(($page - 1) * $config["project_cards_per_page"], $config["project_cards_per_page"]);
+            $projects = $model->readProjects(($page - 1) * $config["project_cards_per_page"], $config["project_cards_per_page"]);
             $position = ($page - 1) * $config["project_cards_per_page"] + 1;
             include_once 'ui/projects_more_page.php';
         } else {
             $inc = 'projects';
             $page_title = 'TM Architektúra. Projekty';
             $page_desc = 'Fotogaléria architektonických projektov a konceptov';
-            $projects = $model->get_projects(0, $config["project_cards_per_page"]);
+            $projects = $model->readProjects(0, $config["project_cards_per_page"]);
             if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["project_cards_per_page"]) {
                 $is_next_page = true;
             }
@@ -109,10 +109,10 @@ class MainController extends Controller
         $page_desc = 'Aktuálny cenník architektonických návrhov';
         $config = $app->getConfig();
         $model = new PricesModel($config);
-        $price_groups = $model->get_price_groups();
+        $price_groups = $model->readPriceGroups();
         $prices = array();
         foreach ($price_groups as $group) {
-            $prices[$group["id"]] = $model->get_prices_by_group_id($group["id"]);
+            $prices[$group["id"]] = $model->readPrices($group["id"]);
         }
         include_once 'ui/layout.php';
     }
@@ -182,7 +182,7 @@ class MainController extends Controller
         if (count($err_msg) === 0) {
             $config = $app->getConfig();
             $model = new MainModel($config);
-            $model->toCRM($fields);
+            $model->insertCrm($fields);
         }
         $inc = 'confirmation';
         $page_title = 'TM Architektúra. Potvrdenie o prijatí';
@@ -217,7 +217,7 @@ class MainController extends Controller
         } else {
             $config = $app->getConfig();
             $model = new UsersModel($config);
-            $admin_profile = $model->get_user_by_username($_POST['username']);
+            $admin_profile = $model->readUser($_POST['username']);
             if(count($admin_profile)>0) {
                 $crypt = $admin_profile[0]["password"];
                 if ($_POST['username'] != $admin_profile[0]["username"] || !password_verify($_POST['password'], $crypt)) {
@@ -271,15 +271,15 @@ class MainController extends Controller
             $config = $app->getConfig();
             $model = new MainModel($config);
             $is_next_page = false;
-            $total = $model->get_count_rows_in_crm();
+            $total = $model->readCountCrm();
             if ($this->args !== null && property_exists($this->args, "page") && (int)$this->args->page > 1) {
                 $page = intval($this->args->page);
                 if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["crm_records_per_page"] * $page) {
                     $is_next_page = true;
                 }
-                $requests = $model->get_crm(($page - 1) * $config["crm_records_per_page"], $config["crm_records_per_page"]);
+                $requests = $model->readCrm(($page - 1) * $config["crm_records_per_page"], $config["crm_records_per_page"]);
             } else {
-                $requests = $model->get_crm(0, $config["crm_records_per_page"]);
+                $requests = $model->readCrm(0, $config["crm_records_per_page"]);
                 if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["crm_records_per_page"]) {
                     $is_next_page = true;
                 }
@@ -310,8 +310,8 @@ class MainController extends Controller
             $config = $app->getConfig();
             $model = new MainModel($config);
             if ($this->args !== null && property_exists($this->args, "id") && intval($this->args->id) > 0) {
-                $model->delete_from_crm(intval($this->args->id));
-                $total = $model->get_count_rows_in_crm();
+                $model->deleteCrm(intval($this->args->id));
+                $total = $model->readCountCrm();
                 $url_parameters = $this->args;
                 $page = 1;
                 if ($total > 0) {
@@ -345,8 +345,8 @@ class MainController extends Controller
             $config = $app->getConfig();
             $model = new MainModel($config);
             if ($this->args !== null && property_exists($this->args, "id") && intval($this->args->id) > 0) {
-                $model->reply_crm_request(intval($this->args->id));
-                $total = $model->get_count_rows_in_crm();
+                $model->updateCrm(intval($this->args->id));
+                $total = $model->readCountCrm();
                 $url_parameters = $this->args;
                 $page = 1;
                 if ($total > 0) {

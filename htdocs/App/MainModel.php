@@ -21,7 +21,7 @@ class MainModel extends Model
      * @param string $lang Prípona tabuľky
      * @return array|null Vracia zoznam projektov
      */
-    public function get_projects($offset = -1, $limit = -1, $lang = "sk")
+    public function readProjects($offset = -1, $limit = -1, $lang = "sk")
     {
         $lim = "";
         $offset = intval($offset);
@@ -44,7 +44,7 @@ class MainModel extends Model
      * @param string $lang Prípona tabuľky
      * @return array|null Vracia počet riadkov v tabuľke
      */
-    public function get_count_rows_in_projects($lang = "sk")
+    public function readCountProjects($lang = "sk")
     {
         $total = null;
         try {
@@ -59,7 +59,7 @@ class MainModel extends Model
      * @param stdClass $fields Polia formulára
      * @return bool Vracia stav vloženia reťazca do databázy
      */
-    public function toCRM($fields)
+    public function insertCrm($fields)
     {
         $data = array(
             ':name' => $fields->name,
@@ -76,7 +76,7 @@ class MainModel extends Model
      * @param int $limit Limit položiek v dotaze
      * @return array|null Vracia zoznam požiadaviek
      */
-    public function get_crm($offset = -1, $limit = -1)
+    public function readCrm($offset = -1, $limit = -1)
     {
         $lim = "";
         $offset = intval($offset);
@@ -98,7 +98,7 @@ class MainModel extends Model
      * Metóda na získanie počtu riadkov v tabuľke crm
      * @return array|null Vracia počet riadkov v tabuľke
      */
-    public function get_count_rows_in_crm()
+    public function readCountCrm()
     {
         $total = null;
         try {
@@ -113,7 +113,7 @@ class MainModel extends Model
      * @param int $id Identifikátor riadku v databáze
      * @return bool Vracia stav vymazania riadku v databáze
      */
-    public function delete_from_crm($id)
+    public function deleteCrm($id)
     {
         $data = array(
             ':id' => $id
@@ -127,7 +127,7 @@ class MainModel extends Model
      * @param int $id Identifikátor riadku v databáze
      * @return bool Vracia stav aktualizácie riadku v databáze
      */
-    public function reply_crm_request($id)
+    public function updateCrm($id)
     {
         $data = array(
             ':id' => $id
