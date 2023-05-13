@@ -304,7 +304,7 @@ class MainController extends Controller
      * Metóda odstránenia položky z databázy crm
      * @param Base $app Inštancia triedy Base
      */
-    public function delete_request($app)
+    public function deleteRequest($app)
     {
         if ($this->is_admin) {
             $config = $app->getConfig();
@@ -339,7 +339,7 @@ class MainController extends Controller
      * Metóda označenia položky v databáze crm ako položky, na ktorú bolo odpovedané
      * @param Base $app Inštancia triedy Base
      */
-    public function reply_request($app)
+    public function replyRequest($app)
     {
         if ($this->is_admin) {
             $config = $app->getConfig();
