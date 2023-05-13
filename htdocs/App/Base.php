@@ -28,7 +28,7 @@ class Base
         }
         /*Nastavenie výstupu chybových správ*/
         ini_set('display_errors', 1);
-        error_reporting((E_ALL | E_STRICT) & ~(E_NOTICE | E_USER_NOTICE));
+        error_reporting(E_ALL);
         /*//Nastavenie výstupu chybových správ**/
         if (!isset($_SERVER['SERVER_NAME']) || $_SERVER['SERVER_NAME'] === '') {
             $_SERVER['SERVER_NAME'] = gethostname();

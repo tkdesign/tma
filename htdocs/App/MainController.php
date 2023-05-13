@@ -129,7 +129,10 @@ class MainController extends Controller
         $config = $app->getConfig();
         /* Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
         $token = hash_hmac('sha256', microtime(true) . mt_rand(), $config["secret_key"]);
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            // funkcia session_start() ešte nebola zavolaná
+            session_start();
+        }
         $_SESSION['csrf_token'] = $token;
         $_SESSION['csrf_token_time'] = time();
         /* //Generovanie a uloženie anti-CSRF tokenu do premennej relácie na ochranu formulára */
@@ -152,7 +155,10 @@ class MainController extends Controller
             if (empty($fields->token)) {
                 $err_msg[] = "Chyba tokenu anti-CSRF";
             } else {
-                session_start();
+                if (session_status() === PHP_SESSION_NONE) {
+                    // funkcia session_start() ešte nebola zavolaná
+                    session_start();
+                }
                 if (hash_equals($_SESSION['csrf_token'], $fields->token)) {
                     // Kontrola platnosti tokenu
                     $token_life = 3600; // Maximálna platnosť tokenu v sekundách
