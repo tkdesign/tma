@@ -204,7 +204,9 @@ class MainController extends Controller
     public function logout($app)
     {
         if ($this->is_admin) {
-            session_start();
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
             session_destroy();
             $app->reroute("/login.html");
             exit();
@@ -229,7 +231,9 @@ class MainController extends Controller
                 if ($_POST['username'] != $admin_profile[0]["username"] || !password_verify($_POST['password'], $crypt)) {
                     $err_msg = "Nesprávne ID používateľa alebo heslo";
                 } else {
-                    session_start();
+                    if (session_status() === PHP_SESSION_NONE) {
+                        session_start();
+                    }
                     session_unset();
                     setcookie('sent', '', (time() - 365 * 24 * 60 * 60), '/');
                     $_SESSION['username'] = $admin_profile[0]["username"];
@@ -251,8 +255,10 @@ class MainController extends Controller
      */
     public function login($app)
     {
-        if (!isset($_SESSION)) {
+        if (session_status() === PHP_SESSION_NONE) {
+//        if (!isset($_SESSION)) {
             session_start();
+//        }
         }
         $inc = 'login';
         $page_title = 'TM Architektúra. Login';
@@ -302,7 +308,7 @@ class MainController extends Controller
             include_once 'ui/layout.php';
         } else {
             http_response_code(403);
-            die('Forbidden');
+            die();
         }
     }
 
@@ -337,7 +343,7 @@ class MainController extends Controller
             }
         } else {
             http_response_code(403);
-            die('Forbidden');
+            die();
         }
     }
 
@@ -372,7 +378,7 @@ class MainController extends Controller
             }
         } else {
             http_response_code(403);
-            die('Forbidden');
+            die();
         }
 
     }
