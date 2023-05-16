@@ -15,6 +15,12 @@ $app->addRoute('POST /auth.html', 'MainController->auth');
 $app->addRoute('GET /dashboard.html', 'MainController->dashboard');
 $app->addRoute('GET /dashboard/delete_request.html', 'MainController->deleteRequest');
 $app->addRoute('GET /dashboard/reply_request.html', 'MainController->replyRequest');
+$app->addRoute('GET /edit.html', 'MainController->portfolioEdit');
+$app->addRoute('GET /edit/details.html', 'MainController->detailsCard');
+$app->addRoute('GET /edit/get_categories.html', 'MainController->getCategories');
+$app->addRoute('GET /edit/delete_request.html', 'MainController->deleteCard');
+$app->addRoute('POST /edit/update_request.html', 'MainController->updateCard');
+$app->addRoute('POST /edit/insert_request.html', 'MainController->insertCard');
 /*//Pravidlá routovania*/
 
 $app->run($config); // volanie metódy centrálneho kontroléra

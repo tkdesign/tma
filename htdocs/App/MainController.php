@@ -224,7 +224,7 @@ class MainController extends Controller
             $config = $app->getConfig();
             $model = new UsersModel($config);
             $admin_profile = $model->readUser($_POST['username']);
-            if(count($admin_profile)>0) {
+            if (count($admin_profile) > 0) {
                 $crypt = $admin_profile[0]["password"];
                 if ($_POST['username'] != $admin_profile[0]["username"] || !password_verify($_POST['password'], $crypt)) {
                     $err_msg = "Nesprávne ID používateľa alebo heslo";
@@ -307,7 +307,7 @@ class MainController extends Controller
     }
 
     /**
-     * Metóda odstránenia položky z databázy crm
+     * Metóda odstránenia položky z tabuľky crm
      * @param Base $app Inštancia triedy Base
      */
     public function deleteRequest($app)
@@ -342,7 +342,7 @@ class MainController extends Controller
     }
 
     /**
-     * Metóda označenia položky v databáze crm ako položky, na ktorú bolo odpovedané
+     * Metóda označenia položky v tabuľke crm ako položky, na ktorú bolo odpovedané
      * @param Base $app Inštancia triedy Base
      */
     public function replyRequest($app)
@@ -375,6 +375,360 @@ class MainController extends Controller
             die('Forbidden');
         }
 
+    }
+
+    /**
+     * Metóda zobrazenia zoznamu projektov uložených v tabuľke projects_$lang
+     * @param Base $app Inštancia triedy Base
+     */
+    public function portfolioEdit($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $model = new MainModel($config);
+            $is_next_page = false;
+            $total = $model->readCountCards();
+            if ($this->args !== null && property_exists($this->args, "page") && (int)$this->args->page > 1) {
+                $page = intval($this->args->page);
+                if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["cards_records_per_page"] * $page) {
+                    $is_next_page = true;
+                }
+                $requests = $model->readCards(($page - 1) * $config["cards_records_per_page"], $config["cards_records_per_page"]);
+            } else {
+                $requests = $model->readCards(0, $config["cards_records_per_page"]);
+                if ($total !== null && count($total) > 0 && $total[0]["count_rows"] > $config["cards_records_per_page"]) {
+                    $is_next_page = true;
+                }
+                $page = 1;
+            }
+            $url_parameters = $this->args;
+            if ($url_parameters !== null && property_exists($url_parameters, "page")) {
+                unset($url_parameters->page);
+            }
+            $count_pages = ceil((int)$total[0]["count_rows"] / (int)$config["cards_records_per_page"]);
+            $inc = 'edit';
+            $page_title = 'TM Architektúra. Portfolio editor';
+            $page_desc = 'Portfolio editor';
+            include_once 'ui/layout.php';
+        } else {
+            http_response_code(403);
+            die();
+        }
+    }
+
+    /**
+     * Metóda odstránenia položky z tabuľky projects_$lang
+     * @param Base $app Inštancia triedy Base
+     */
+    public function getCategories($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $model = new MainModel($config);
+            $all_categories = $model->getCategories();
+            if (count($all_categories) > 0) {
+                $response = json_encode($all_categories);
+                $app->returnJsonHttpResponse(true, $response);
+            } else {
+                $response = json_encode(array('status' => FALSE));
+                $app->returnJsonHttpResponse(false, $response);
+            }
+        } else {
+            http_response_code(403);
+            die();
+        }
+    }
+
+    /**
+     * Metóda odstránenia položky z tabuľky projects_$lang
+     * @param Base $app Inštancia triedy Base
+     */
+    public function detailsCard($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $model = new MainModel($config);
+            if ($this->args !== null && property_exists($this->args, "id") && intval($this->args->id) > 0) {
+                $id = intval($this->args->id);
+                $project = $model->readCard($id);
+                if (count($project) > 0) {
+                    $all_categories = $model->getCategories();
+                    $linked_categories = $model->getLinkedCategories($id);
+                    $response = json_encode(array($project[0], $all_categories, $linked_categories));
+                    $app->returnJsonHttpResponse(true, $response);
+                } else {
+                    $response = json_encode(array('status' => FALSE));
+                    $app->returnJsonHttpResponse(false, $response);
+                }
+            }
+        } else {
+            http_response_code(403);
+            die();
+        }
+    }
+
+    /**
+     * Metóda odstránenia položky z tabuľky projects_$lang
+     * @param Base $app Inštancia triedy Base
+     */
+    public function deleteCard($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $model = new MainModel($config);
+            if ($this->args !== null && property_exists($this->args, "id") && intval($this->args->id) > 0) {
+                $project = $model->readCard(intval($this->args->id));
+                if (count($project)>0) {
+                    $res = $model->deleteCard(intval($this->args->id));
+                    if ($res) {
+                        $previewPath = $_SERVER['DOCUMENT_ROOT'] . '/img/preview/' . $project[0]['image'];
+                        $originalPath = $_SERVER['DOCUMENT_ROOT'] . '/img/details/' . $project[0]['image'];
+                        try {
+                            if(file_exists($previewPath) && is_file($previewPath)) {
+                                unlink($previewPath);
+                            }
+                            if(file_exists($originalPath) && is_file($originalPath)) {
+                                unlink($originalPath);
+                            }
+                        } catch (\Exception $err) {
+
+                        }
+                    }
+                }
+                $total = $model->readCountCards();
+                $url_parameters = $this->args;
+                $page = 1;
+                if ($total > 0) {
+                    $count_pages = ceil((int)$total[0]["count_rows"] / (int)$config["cards_records_per_page"]);
+                    $page = (property_exists($this->args, "page") ? $this->args->page : 1);
+                }
+                if ($url_parameters !== null) {
+                    if (property_exists($url_parameters, "page")) {
+                        unset($url_parameters->page);
+                    }
+                    if (property_exists($url_parameters, "id")) {
+                        unset($url_parameters->id);
+                    }
+                }
+                $url = "/edit.html" . ($page > 1 ? "?page=" . $page . (!empty((array)$url_parameters) ? "&" . $app->parseObject($url_parameters) : "") : (!empty((array)$url_parameters) ? "?" . $app->parseObject($url_parameters) : ""));
+                $app->reroute($url);
+            }
+        } else {
+            http_response_code(403);
+            die();
+        }
+    }
+
+    /**
+     * Metóda aktualizácie údajov v tabuľke projects_$lang
+     * @param $app Inštancia triedy Base
+     */
+    public function updateCard($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $status = false;
+            $message = '';
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                if (isset($_FILES['image'])&&!empty($_FILES['image']['name'])) {
+                    $originalName = basename($_FILES['image']['name']);
+                    $targetFile = $_SERVER['DOCUMENT_ROOT'].'/img/details/' . $originalName;
+                    $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+                    $check = getimagesize($_FILES['image']['tmp_name']);
+                    // Kontrola, či je súbor s obrázkom skutočný obrázok alebo nie
+                    if ($check !== false) {
+                        $width = $check[0];
+                        $height = $check[1];
+                        // Kontrola určitých formátov súborov
+                        if ($imageFileType != 'jpg' && $imageFileType != 'jpeg' && $imageFileType != 'png' && $imageFileType != 'gif') {
+                            $message = 'Povolené sú len súbory JPG, JPEG, PNG a GIF.';
+                        } else {
+                            // Nahratie originálneho súboru
+                            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+                                // Vytvorenie náhľadu
+                                $thumbWidth = 600;
+                                $thumbHeight = intval($height / $width * $thumbWidth);
+                                $thumbImage = imagecreatetruecolor($thumbWidth, $thumbHeight);
+                                switch ($imageFileType) {
+                                    case 'jpg':
+                                    case 'jpeg':
+                                        $originalImage = imagecreatefromjpeg($targetFile);
+                                        break;
+                                    case 'png':
+                                        $originalImage = imagecreatefrompng($targetFile);
+                                        break;
+                                    case 'gif':
+                                        $originalImage = imagecreatefromgif($targetFile);
+                                        break;
+                                }
+                                imagecopyresized($thumbImage, $originalImage, 0, 0, 0, 0, $thumbWidth, $thumbHeight, $width, $height);
+                                $thumbFile = $_SERVER['DOCUMENT_ROOT'] . '/img/preview/' . $originalName;
+                                switch ($imageFileType) {
+                                    case 'jpg':
+                                    case 'jpeg':
+                                        imagejpeg($thumbImage, $thumbFile);
+                                        break;
+                                    case 'png':
+                                        imagepng($thumbImage, $thumbFile);
+                                        break;
+                                    case 'gif':
+                                        imagegif($thumbImage, $thumbFile);
+                                        break;
+                                }
+                                imagedestroy($thumbImage);
+                                imagedestroy($originalImage);
+                                $data = new stdClass();
+                                foreach ($_POST as $key => $value) {
+                                    $data->$key=$value;
+                                }
+                                $data->image = $originalName;
+                                $data->image_ImageWidth = $width;
+                                $data->image_ImageHeight = $height;
+                                if (property_exists($data, "published") && $data->published === "true") {
+                                    $data->published = 1;
+                                } else {
+                                    $data->published = 0;
+                                }
+                                $model = new MainModel($config);
+                                $project = $model->readCard(intval($data->id));
+                                if (count($project)>0) {
+                                    $previewPath = $_SERVER['DOCUMENT_ROOT'] . '/img/preview/' . $project[0]['image'];
+                                    $originalPath = $_SERVER['DOCUMENT_ROOT'] . '/img/details/' . $project[0]['image'];
+                                    try {
+                                        if(file_exists($previewPath) && is_file($previewPath)) {
+                                            unlink($previewPath);
+                                        }
+                                        if(file_exists($originalPath) && is_file($originalPath)) {
+                                            unlink($originalPath);
+                                        }
+                                    } catch (\Exception $err) {
+
+                                    }
+                                }
+                                if ($model->updateCard($data)) {
+                                    $status = true;
+                                }
+                            } else {
+                                $message = 'Chyba pri nahrávaní vášho súboru.';
+                            }
+                        }
+                    } else {
+                        $message = 'Súbor nie je obrázok.';
+                    }
+                } else {
+                    $data = new stdClass();
+                    foreach ($_POST as $key => $value) {
+                        $data->$key=$value;
+                    }
+                    $data->image = $data->image_name;
+                    $data->image_ImageWidth = $data->image_width;
+                    $data->image_ImageHeight = $data->image_height;
+                    if (property_exists($data, "published") && $data->published === "true") {
+                        $data->published = 1;
+                    } else {
+                        $data->published = 0;
+                    }
+                    $model = new MainModel($config);
+                    if ($model->updateCard($data)) {
+                        $status = true;
+                    }
+                }
+            }
+            $response = json_encode(array('status' => $status,'message' => $message));
+            $app->returnJsonHttpResponse($status, $response);
+        } else {
+            http_response_code(403);
+            die();
+        }
+    }
+
+    /**
+     * Metóda vkladania rekordu do tabuľky projects_$lang
+     * @param Base $app Inštancia triedy Base
+     */
+    public function insertCard($app)
+    {
+        if ($this->is_admin) {
+            $config = $app->getConfig();
+            $status = false;
+            $message = '';
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
+                $originalName = basename($_FILES['image']['name']);
+                $targetFile = $_SERVER['DOCUMENT_ROOT'].'/img/details/' . $originalName;
+                $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+                $check = getimagesize($_FILES['image']['tmp_name']);
+                // Kontrola, či je súbor s obrázkom skutočný obrázok alebo nie
+                if ($check !== false) {
+                    $width = $check[0];
+                    $height = $check[1];
+                    // Kontrola určitých formátov súborov
+                    if ($imageFileType != 'jpg' && $imageFileType != 'jpeg' && $imageFileType != 'png' && $imageFileType != 'gif') {
+                        $message = 'Povolené sú len súbory JPG, JPEG, PNG a GIF.';
+                    } else {
+                        // Nahratie originálneho súboru
+                        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+                            // Vytvorenie náhľadu
+                            $thumbWidth = 600;
+                            $thumbHeight = intval($height / $width * $thumbWidth);
+                            $thumbImage = imagecreatetruecolor($thumbWidth, $thumbHeight);
+                            switch ($imageFileType) {
+                                case 'jpg':
+                                case 'jpeg':
+                                    $originalImage = imagecreatefromjpeg($targetFile);
+                                    break;
+                                case 'png':
+                                    $originalImage = imagecreatefrompng($targetFile);
+                                    break;
+                                case 'gif':
+                                    $originalImage = imagecreatefromgif($targetFile);
+                                    break;
+                            }
+                            imagecopyresized($thumbImage, $originalImage, 0, 0, 0, 0, $thumbWidth, $thumbHeight, $width, $height);
+                            $thumbFile = $_SERVER['DOCUMENT_ROOT'] . '/img/preview/' . $originalName;
+                            switch ($imageFileType) {
+                                case 'jpg':
+                                case 'jpeg':
+                                    imagejpeg($thumbImage, $thumbFile);
+                                    break;
+                                case 'png':
+                                    imagepng($thumbImage, $thumbFile);
+                                    break;
+                                case 'gif':
+                                    imagegif($thumbImage, $thumbFile);
+                                    break;
+                            }
+                            imagedestroy($thumbImage);
+                            imagedestroy($originalImage);
+                            $data = new stdClass();
+                            foreach ($_POST as $key => $value) {
+                                $data->$key=$value;
+                            }
+                            $data->image = $originalName;
+                            $data->image_ImageWidth = $width;
+                            $data->image_ImageHeight = $height;
+                            if (property_exists($data, "published") && $data->published === "true") {
+                                $data->published = 1;
+                            } else {
+                                $data->published = 0;
+                            }
+                            $model = new MainModel($config);
+                            if ($model->insertCard($data)) {
+                                $status = true;
+                            }
+                        } else {
+                            $message = 'Chyba pri nahrávaní vášho súboru.';
+                        }
+                    }
+                } else {
+                    $message = 'Súbor nie je obrázok.';
+                }
+            }
+            $response = json_encode(array('status' => $status,'message' => $message));
+            $app->returnJsonHttpResponse($status, $response);
+        } else {
+            http_response_code(403);
+            die();
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 <main class="container">
     <section class="p-5">
-        <h1 id="pagetitle">Dashboard</h1>
-        <p class="lead text-muted">Správa a monitorovanie</p>
+        <h1 id="pagetitle"><?=$page_title?></h1>
+        <p class="lead text-muted"><?=$page_desc?></p>
     </section>
     <hr>
     <!-- Blok požiadaviek -->

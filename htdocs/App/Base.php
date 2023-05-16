@@ -138,6 +138,26 @@ class Base
         }, array_keys(get_object_vars($obj)), array_values(get_object_vars($obj))));
     }
 
+    /**
+     * Metóda odoslania odpovede servera vo formáte application/json
+     * @param int $success Kód odpovede servera
+     * @param string $data Údaje JSON serializované do reťazca
+     */
+    function returnJsonHttpResponse($success, $data)
+    {
+        ob_clean();
+        header_remove();
+        header("Content-type: application/json; charset=utf-8");
+        if ($success) {
+            http_response_code(200);
+        } else {
+            http_response_code(500);
+        }
+        echo $data;
+        exit();
+    }
+
+
 }
 
 return Base::getInstance(); // Vrátiť jednu inštanciu objektu triedy Base

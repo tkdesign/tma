@@ -20,7 +20,7 @@ function checkedOff() {
 }
 
 /* Vykonať JavaScript ihneď po načítaní stránky */
-window.addEventListener('load', function (event) {
+window.addEventListener('DOMContentLoaded', function (event) {
 
     /* Inicializačný kód pre validáciu polí formulára pomocou Bootstrapu */
     const forms = document.querySelectorAll('.needs-validation'); // Dostať všetky polia formulára, ktoré vyžadujú validaciu (ktoré majú triedu "needs-validation")
@@ -33,7 +33,7 @@ window.addEventListener('load', function (event) {
             form.classList.add('was-validated'); // Pridanie triedy "was-validated" do formulára
             alert('Kontrola formulára bola úspešne dokončená!\nStlačte tlačidlo OK pre pokračovanie');
         }, false);
-    })
+    });
 
     /* Inicializačný kód pre tlačidlá modálneho okna GDPR */
     const yesBtn = document.getElementById('yesBtn'); // Dostať tlačidlo "súhlasím" modálneho okna GDPR
