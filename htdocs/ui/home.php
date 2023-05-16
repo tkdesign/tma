@@ -45,6 +45,7 @@
                             <li class="nav-item"><a class="nav-link" href="/contacts.html">Kontakt</a></li>
                             <?php if($this->is_admin): ?>
                             <li class="nav-item"><a class="nav-link" href="/dashboard.html">Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/edit.html">Manažment</a></li>
                             <li class="nav-item"><a class="nav-link" href="/logout.html">Logout</a></li>
                             <?php endif; ?>
                         </ul>

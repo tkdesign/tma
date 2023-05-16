@@ -414,7 +414,7 @@ class MainController extends Controller
             $count_pages = ceil((int)$total[0]["count_rows"] / (int)$config["cards_records_per_page"]);
             $inc = 'edit';
             $page_title = 'TM Architektúra. Portfolio editor';
-            $page_desc = 'Portfolio editor';
+            $page_desc = 'Vytváranie, odstraňovanie a úprava projektov';
             include_once 'ui/layout.php';
         } else {
             http_response_code(403);
