@@ -122,8 +122,10 @@ moderných webových prehliadačov -->
                 EditorWnd._element.querySelector('[name="full_text"]').value = result[0].full_text;
                 EditorWnd._element.querySelector('[name="customer"]').value = result[0].customer;
                 EditorWnd._element.querySelector('[name="ordering"]').value = result[0].ordering;
-                if (result[0].published) {
-                    EditorWnd._element.querySelector('[name="published"]').checked = "true";
+                if (parseInt(result[0].published)) {
+                    EditorWnd._element.querySelector('[name="published"]').checked = true;
+                } else {
+                    EditorWnd._element.querySelector('[name="published"]').checked = false;
                 }
                 EditorWnd._element.querySelector('[name="meta_key"]').value = result[0].meta_key;
                 EditorWnd._element.querySelector('[name="meta_description"]').value = result[0].meta_description;
@@ -227,9 +229,6 @@ moderných webových prehliadačov -->
                     addProject(form);
                 }
             }
-        });
-        EditorWnd._element.querySelector('button[data-action="noBtn"]').addEventListener('click', (event) => {
-            EditorWnd.close();
         });
         EditorWnd._element.querySelector('#projectImage').addEventListener('change', (event) => {
             const file = event.target.files[0];

@@ -532,6 +532,7 @@ class MainController extends Controller
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($_FILES['image'])&&!empty($_FILES['image']['name'])) {
                     $originalName = basename($_FILES['image']['name']);
+                    $originalName = uniqid("tma") . "." . $originalName;
                     $targetFile = $_SERVER['DOCUMENT_ROOT'].'/img/details/' . $originalName;
                     $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
                     $check = getimagesize($_FILES['image']['tmp_name']);
@@ -654,6 +655,7 @@ class MainController extends Controller
             $message = '';
             if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
                 $originalName = basename($_FILES['image']['name']);
+                $originalName = uniqid("tma") . "." . $originalName;
                 $targetFile = $_SERVER['DOCUMENT_ROOT'].'/img/details/' . $originalName;
                 $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
                 $check = getimagesize($_FILES['image']['tmp_name']);

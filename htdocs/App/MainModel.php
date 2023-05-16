@@ -347,7 +347,7 @@ class MainModel extends Model
 
     /**
      * Metóda na čítanie informácií o projekte z tabuľky podľa jeho id
-     * @param $id Identifikátor riadku v tabuľke
+     * @param int $id Identifikátor riadku v tabuľke
      * @param string $lang Prípona tabuľky
      * @return array|null Vracia poľa informácií o projekte
      */
