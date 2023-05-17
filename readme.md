@@ -34,7 +34,11 @@ $config = array(
     "db_username" => "root",
     "db_password" => "",
     "db_name" => "tma",
-    "project_cards_per_page" => 9
+    "project_cards_per_page" => 9,
+    "crm_records_per_page" => 10,
+    "cards_records_per_page" => 10,
+    "secret_key" => "Dam?U33?$7",
+    'expiry' => 24
 );
 ```
 
