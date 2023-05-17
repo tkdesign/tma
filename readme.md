@@ -44,6 +44,8 @@ $config = array(
 
 Here you must also specify the database user password (if it is used on the server).
 
+The administrative interface of the site is hidden. The login page is available at the link `site_name/login.html`, login: `admin`, password: `admin`.
+
 ## Requirements
 
 - PHP 7.4
