@@ -27,7 +27,7 @@ class UsersModel extends Model
             );
             $stmt = $this->db->prepare("SELECT * FROM users WHERE username=:username AND usertype=1 AND block=0 LIMIT 1");
             $stmt->execute($data);
-            $result = $stmt->fetchAll();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $err) {
         }
         return $result;
