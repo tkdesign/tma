@@ -1,18 +1,13 @@
-# skriptovacie-jazyky-2023-po
+# Architectural studio website with custom PHP microframework
 
 ## About
 
-Project of the website of an architectural bureau. 
-
-The backend of the site is written in php and is compatible with version 7.4. The frontend uses a template with vanilla JavaScript, as well as Bootstrap 5 library to style the interface and implement various special effects.
-
-The server side of the site does not use any php frameworks or CMS, only pure php. Especially for this project wrote its own implementation of the concept of MVC and routing requests. The singleton pattern for the basic dispatching and rendering class is also used.
+Architectural studio website project based on custom PHP microframework. The site has a simple admin area for managing content.
 
 ## Copyrights
 
-The author of the backend and frontend of this project is Petr Kovalenko.
-
-Photos of completed projects and renderings of architectural concepts are provided for this site by architect Maria Tolypina, who holds the exclusive copyright to them. Use of these materials outside of this site is possible only with her permission.
+Author of the site: Petr Kovalenko, 2023.
+Author of photos and renderings: architect Maria Tolypina, who holds the exclusive copyright to them. Use of these materials outside of this site is possible only with her permission.
 
 ## Getting started
 
